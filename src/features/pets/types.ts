@@ -1,0 +1,21 @@
+export type Pet = {
+  id: string;
+  owner_id: string;
+  name: string;
+  species: string;
+  breed: string | null;
+  birth_date: string | null;
+  sex: string | null;
+  main_photo_url: string | null;
+  feeding_routine: string | null;
+  medical_info: string | null;
+  medication: string | null;
+  vet_contact: string | null;
+  behavior_notes: string | null;
+  energy_level: string | null;
+  fears_triggers: string | null;
+  special_needs: string | null;
+  additional_notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
