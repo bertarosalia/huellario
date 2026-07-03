@@ -3,8 +3,14 @@
 ## Decisión
 
 Next.js (App Router) full-stack + Supabase (Auth, PostgreSQL, Storage) +
-OpenAI API. Monolito modular: un único proyecto organizado por módulos
-funcionales, sin backend separado.
+Google Gemini API. Monolito modular: un único proyecto organizado por
+módulos funcionales, sin backend separado.
+
+(La IA se decidió inicialmente con OpenAI API; se cambió a Google Gemini en
+la Fase 6 por requerir OpenAI un método de pago activo incluso para uso
+mínimo, mientras que Gemini ofrece tier gratuito sin tarjeta. No cambia
+nada más de la arquitectura: sigue llamándose solo desde servidor, con
+Structured Outputs y el mismo flujo de borrador → revisión → publicación.)
 
 Justificación resumida: evita levantar y desplegar dos aplicaciones para un
 MVP individual, aprovecha el perfil frontend de la autora, y Supabase cubre
@@ -34,7 +40,7 @@ features/<dominio>/
 
 lib/
   supabase/   → client.ts, server.ts, middleware.ts
-  openai/     → client.ts, generate-report.ts (pendiente de Fase 6)
+  ai/         → client.ts, generate-report.ts (Google Gemini)
   utils.ts, constants.ts
 
 database/
@@ -45,13 +51,11 @@ database/
 
 - Rutas `(client)` y `admin` protegidas por sesión vía `src/proxy.ts` (convención
   de Next.js 16, sustituye a `middleware.ts`) + `src/lib/supabase/middleware.ts`.
-  La comprobación de rol `admin` (más allá
-  de sesión activa) se hará en servidor dentro de cada ruta/acción de
-  `admin/*`, no solo en middleware — pendiente de Fase 1.
-- RLS activo en todas las tablas con datos privados (pendiente de Fase 1,
-  aún no se han creado las tablas).
-- Claves privadas (`OPENAI_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`) solo en
-  servidor; `lib/openai/client.ts` importa `server-only` para reforzarlo.
+  La comprobación de rol `admin` se revalida además en servidor en el
+  layout de `admin/*` (no solo en middleware).
+- RLS activo en todas las tablas con datos privados.
+- Claves privadas (`GEMINI_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`) solo en
+  servidor; `lib/ai/client.ts` importa `server-only` para reforzarlo.
 
 ## Identidad visual
 
@@ -75,12 +79,8 @@ registro), no Radix: los componentes interactivos (`Button`, etc.) reciben
 una prop `render` en vez de `asChild` para delegar el elemento renderizado
 (p. ej. `<Button render={<Link href="/login" />}>`).
 
-## Estado actual (Sprint 0)
+## Estado actual
 
-- [x] Next.js + TypeScript + Tailwind CSS v4 + shadcn/ui inicializados.
-- [x] Estructura de carpetas creada.
-- [x] Wrappers de Supabase (`client.ts`, `server.ts`, `middleware.ts`) y de
-      OpenAI (`client.ts`) creados, sin lógica de negocio todavía.
-- [ ] Proyecto Supabase real conectado (pendiente: crear proyecto, rellenar
-      `.env.local`, validar conexión).
-- [ ] Tablas y RLS (Fase 1).
+Fases 0-6 completadas (ver "Estado del proyecto" en `README.md` para el
+detalle por fase). Wrappers de Supabase y de IA (`lib/ai/client.ts`,
+`lib/ai/generate-report.ts`, Google Gemini) en uso desde la Fase 6.

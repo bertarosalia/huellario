@@ -36,9 +36,11 @@ La funcionalidad diferencial es el diario automático con IA. Cualquier decisió
 | Formularios | React Hook Form |
 | Validación | Zod |
 | Backend | Supabase (Auth + PostgreSQL + Storage) |
-| IA | OpenAI API (solo desde servidor) |
+| IA | Google Gemini API (`@google/genai`, solo desde servidor) |
 | Despliegue | Vercel |
 | Testing | Vitest, React Testing Library, Playwright |
+
+(Decisión inicial anterior: OpenAI API — descartada en la Fase 6 porque requiere método de pago activo incluso para uso mínimo. Se sustituye por Google Gemini API, con tier gratuito sin tarjeta. La arquitectura de la integración —servidor únicamente, Structured Outputs, minimización de datos, borrador nunca autopublicado— se mantiene igual, solo cambia el proveedor.)
 
 No propongas alternativas a este stack (ej. Prisma, NextAuth, Firebase, Redux) salvo que se pida explícitamente evaluar una alternativa.
 
@@ -69,7 +71,7 @@ features/
 
 lib/
   supabase/       → client.ts, server.ts, middleware.ts
-  openai/         → client.ts, generate-report.ts
+  ai/             → client.ts, generate-report.ts (Google Gemini)
   utils.ts
   constants.ts
 
@@ -102,8 +104,8 @@ Al escribir queries o mutaciones, respeta las relaciones ya definidas (1→N, 1�
 - Toda ruta bajo `(client)` y `admin` requiere sesión activa; `admin` requiere además rol `admin`.
 - Row Level Security activo en todas las tablas con datos privados: `profiles`, `pets`, `bookings`, `visits`, `visit_photos`, `reports`, `reviews`. No propongas desactivar RLS "para simplificar".
 - Un cliente solo accede a sus propios datos (mascotas, reservas, informes). Nunca construyas una query que dependa solo de un filtro en frontend para esto — el control real va en RLS/servidor.
-- Claves privadas (`OPENAI_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`) solo se usan en servidor. Nunca las expongas en componentes cliente ni en variables `NEXT_PUBLIC_*`.
-- La llamada a OpenAI API se hace siempre desde servidor (route handler o server action), nunca desde el navegador.
+- Claves privadas (`GEMINI_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`) solo se usan en servidor. Nunca las expongas en componentes cliente ni en variables `NEXT_PUBLIC_*`.
+- La llamada a la API de IA se hace siempre desde servidor (route handler o server action), nunca desde el navegador.
 - Los informes generados por IA se crean siempre en estado `draft`. Nunca se publican automáticamente — requieren acción explícita de la administradora.
 - Minimización de datos hacia la IA: solo mascota + visita + checklist + notas + incidencias. Nunca envíes email, teléfono, dirección completa u otros datos de clientes al prompt.
 
@@ -159,7 +161,7 @@ Aplícalos de forma pragmática, no dogmática — el objetivo es mantenibilidad
 - **O — Open/Closed**: por ejemplo, el checklist de cuidados (`care_checklist`) o los estados de reserva deben poder ampliarse (nuevo tipo de cuidado, nuevo estado) sin reescribir la lógica que ya los procesa — usa estructuras de datos y switches/maps exhaustivos, no cadenas de `if` frágiles.
 - **L — Liskov Substitution**: si se crean abstracciones (ej. distintos "generadores de informe" o "proveedores de storage"), cualquier implementación concreta debe poder sustituir a la interfaz sin romper el comportamiento esperado por quien la usa.
 - **I — Interface Segregation**: prefiere tipos y props específicos por componente en vez de un único tipo "gigante" compartido con campos que la mayoría de consumidores no usan (ej. no pases el objeto `Pet` completo a un componente que solo necesita nombre y foto).
-- **D — Dependency Inversion**: la lógica de negocio (`features/*`) no debe depender directamente del SDK de Supabase u OpenAI desnudo en todas partes; pasa por los wrappers de `lib/supabase` y `lib/openai`. Esto facilita testear con mocks y cambiar de proveedor si hiciera falta.
+- **D — Dependency Inversion**: la lógica de negocio (`features/*`) no debe depender directamente del SDK de Supabase o de Google Gemini desnudo en todas partes; pasa por los wrappers de `lib/supabase` y `lib/ai`. Esto facilita testear con mocks y cambiar de proveedor si hiciera falta.
 
 No fuerces SOLID donde añada complejidad innecesaria para el tamaño del MVP (ej. no crear interfaces/abstracciones especulativas para un único proveedor que no va a cambiar). Prioriza claridad sobre pureza arquitectónica.
 

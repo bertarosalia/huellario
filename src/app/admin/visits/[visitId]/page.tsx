@@ -1,6 +1,10 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getVisitById } from "@/features/visits/queries";
 import { CHECKLIST_ITEMS } from "@/features/visits/schemas";
+import { getReportByVisitId } from "@/features/reports/queries";
+import { GenerateReportButton } from "@/components/reports/generate-report-button";
+import { Button } from "@/components/ui/button";
 
 const CHECKLIST_DB_KEYS: Record<string, keyof NonNullable<Awaited<ReturnType<typeof getVisitById>>>["care_checklist"]> = {
   ate: "ate",
@@ -24,14 +28,25 @@ export default async function VisitDetailPage({
     notFound();
   }
 
+  const report = await getReportByVisitId(visit.id);
+
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-16">
-      <div>
-        <h1 className="text-2xl font-semibold">Visita de {visit.pets?.name}</h1>
-        <p className="text-muted-foreground">
-          {new Date(visit.visited_at).toLocaleString("es-ES")}
-          {visit.duration_minutes ? ` · ${visit.duration_minutes} min` : ""}
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">Visita de {visit.pets?.name}</h1>
+          <p className="text-muted-foreground">
+            {new Date(visit.visited_at).toLocaleString("es-ES")}
+            {visit.duration_minutes ? ` · ${visit.duration_minutes} min` : ""}
+          </p>
+        </div>
+        {report ? (
+          <Button variant="outline" render={<Link href={`/admin/reports/${report.id}/edit`} />}>
+            {report.status === "published" ? "Ver informe publicado" : "Revisar borrador"}
+          </Button>
+        ) : (
+          <GenerateReportButton visitId={visit.id} />
+        )}
       </div>
 
       {visit.mood && (

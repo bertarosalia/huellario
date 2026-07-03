@@ -7,14 +7,14 @@ generación automática de diarios de visita mediante IA. TFM individual.
 
 Next.js (App Router) · TypeScript · React · Tailwind CSS · shadcn/ui ·
 lucide-react · React Hook Form · Zod · Supabase (Auth + PostgreSQL +
-Storage) · OpenAI API · Vercel · Vitest / React Testing Library / Playwright.
+Storage) · Google Gemini API · Vercel · Vitest / React Testing Library / Playwright.
 
 ## Cómo levantar el proyecto en local
 
 ```bash
 pnpm install
 cp .env.example .env.local
-# rellena .env.local con tus credenciales de Supabase y OpenAI
+# rellena .env.local con tus credenciales de Supabase y Google Gemini
 pnpm dev
 ```
 
@@ -29,7 +29,8 @@ Ver [`.env.example`](.env.example). Resumen:
 | `NEXT_PUBLIC_SUPABASE_URL` | cliente y servidor | URL del proyecto Supabase |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | cliente y servidor | Clave anónima pública |
 | `SUPABASE_SERVICE_ROLE_KEY` | solo servidor | Clave con privilegios elevados |
-| `OPENAI_API_KEY` | solo servidor | Generación de informes con IA |
+| `GEMINI_API_KEY` | solo servidor | Generación de informes con IA (Google Gemini, tier gratuito) |
+| `GEMINI_MODEL` | solo servidor | Modelo de Gemini a usar (opcional, por defecto `gemini-2.5-flash`) |
 | `NEXT_PUBLIC_SITE_URL` | cliente y servidor | URL pública del sitio (SEO: metadata, sitemap, robots) |
 
 `.env.local` nunca se sube al repositorio.
@@ -46,7 +47,7 @@ Ver [`.env.example`](.env.example). Resumen:
 
 - **Sprint 0 (Fase 0) — completada**: proyecto Next.js + TypeScript +
   Tailwind + shadcn/ui inicializado, estructura de carpetas creada, wrappers
-  de Supabase y OpenAI, `.env.example` documentado. Proyecto real de
+  de Supabase y de IA, `.env.example` documentado. Proyecto real de
   Supabase creado y conectado (`.env.local` configurado).
 - **Identidad visual aplicada**: paleta (terracota/salvia), tipografía
   (Public Sans) y radios de borde definidos en `src/app/globals.css` a
@@ -97,4 +98,19 @@ Ver [`.env.example`](.env.example). Resumen:
   cliente (RLS: solo cuando exista un informe publicado — Fase 7).
   Verificado extremo a extremo: crear visita desde una reserva aceptada,
   ver su detalle, y que el enlace cambia a "Ver visita" tras crearla.
-  Pendiente para fases siguientes: diario automático con IA (Fase 6).
+- **Fase 6 (Diario automático con IA) — completada**: `src/lib/ai/` genera
+  el informe con **Google Gemini API** (no OpenAI — cambio de proveedor
+  decidido en esta fase por requerir OpenAI método de pago activo; ver
+  `docs/ia.md`), usando Structured Outputs (JSON Schema) para title,
+  summary, story, care_summary, incidents y owner_message, minimizando los
+  datos enviados (solo mascota + visita + checklist + notas + incidencias,
+  nunca datos de contacto del cliente). El resultado se serializa a un
+  único texto formateado y se guarda en `reports` como `draft`. Desde el
+  detalle de visita: botón "Generar informe con IA" → editor
+  (`/admin/reports/[reportId]/edit`) con texto editable, "Guardar borrador"
+  y "Publicar informe". Trazabilidad guardada: modelo, versión de prompt,
+  fecha de generación/publicación. Verificado extremo a extremo con la API
+  real de Gemini: generar informe desde una visita → texto coherente y
+  fiel a los datos → publicar → badge de estado actualizado.
+  Pendiente para fases siguientes: consulta del informe publicado por el
+  cliente (Fase 7).
