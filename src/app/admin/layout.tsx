@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUserWithProfile } from "@/features/auth/queries";
+import { AdminHeader } from "@/components/layout/admin-header";
 
 export const metadata: Metadata = {
   robots: {
@@ -24,5 +25,10 @@ export default async function AdminLayout({
     redirect("/dashboard");
   }
 
-  return children;
+  return (
+    <div className="flex flex-1 flex-col">
+      <AdminHeader />
+      {children}
+    </div>
+  );
 }

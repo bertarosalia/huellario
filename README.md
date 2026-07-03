@@ -76,4 +76,15 @@ Ver [`.env.example`](.env.example). Resumen:
   cliente solo ve/edita/elimina sus propias mascotas). Fotografía principal
   pospuesta a la Fase 8 (Storage). Verificado extremo a extremo: crear,
   listar, ver detalle, editar y eliminar.
-  Pendiente para fases siguientes: reservas (Fase 4).
+- **Fase 4 (Gestión de reservas) — completada**: solicitud de reserva por
+  el cliente (`/bookings/new`, selecciona mascota propia y servicio activo),
+  listado propio (`/bookings`) y detalle (`/bookings/[bookingId]`);
+  panel de administradora (`/admin/bookings` listado en tabla,
+  `/admin/bookings/[bookingId]` con datos de cliente, información de
+  cuidado de la mascota y botones de cambio de estado según transición
+  válida: pendiente→aceptada/rechazada, aceptada→completada/cancelada).
+  Estado inicial siempre `pending` (forzado por trigger en BD), cambios de
+  estado restringidos a administradora (RLS). Verificado extremo a
+  extremo: crear solicitud → aceptar como admin → estado reflejado para
+  el cliente.
+  Pendiente para fases siguientes: registro de visitas (Fase 5).
