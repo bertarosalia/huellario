@@ -65,5 +65,15 @@ Ver [`.env.example`](.env.example). Resumen:
   Auth, redirección según rol tras login, protección de `(client)` (sesión)
   y `admin` (sesión + rol admin, comprobado en servidor), y cierre de
   sesión. Todo verificado extremo a extremo contra el proyecto real.
-  Pendiente para fases siguientes: gestión de mascotas (Fase 3), reservas
-  (Fase 4).
+- **Fase 2 (Área pública)**: cubierta parcialmente por la landing del
+  Sprint 0 (hero, cómo funciona, servicios). Pendiente explícitamente
+  pospuesto: comprobación de responsive dedicada y página `/services`
+  separada — no bloquea el flujo principal, se retomará más adelante.
+- **Fase 3 (Gestión de mascotas) — completada**: CRUD completo (`/pets`,
+  `/pets/new`, `/pets/[petId]`, `/pets/[petId]/edit`) con formulario único
+  reutilizable (React Hook Form + Zod), organizado en datos básicos,
+  cuidado/salud y comportamiento. Ownership garantizado por RLS (cada
+  cliente solo ve/edita/elimina sus propias mascotas). Fotografía principal
+  pospuesta a la Fase 8 (Storage). Verificado extremo a extremo: crear,
+  listar, ver detalle, editar y eliminar.
+  Pendiente para fases siguientes: reservas (Fase 4).

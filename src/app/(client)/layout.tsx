@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUserWithProfile } from "@/features/auth/queries";
+import { ClientHeader } from "@/components/layout/client-header";
 
 export const metadata: Metadata = {
   robots: {
@@ -18,5 +19,10 @@ export default async function ClientLayout({
     redirect("/login");
   }
 
-  return children;
+  return (
+    <div className="flex flex-1 flex-col">
+      <ClientHeader />
+      {children}
+    </div>
+  );
 }

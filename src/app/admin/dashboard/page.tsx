@@ -6,7 +6,7 @@ export default async function AdminDashboardPage() {
   const { user, profile } = await getCurrentUserWithProfile();
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-1 flex-col gap-6 px-4 py-16">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-16">
       <div>
         <h1 className="text-2xl font-semibold">
           Panel de administración{profile?.full_name ? ` — ${profile.full_name}` : ""}
