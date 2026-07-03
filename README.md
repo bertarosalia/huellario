@@ -87,4 +87,14 @@ Ver [`.env.example`](.env.example). Resumen:
   estado restringidos a administradora (RLS). Verificado extremo a
   extremo: crear solicitud → aceptar como admin → estado reflejado para
   el cliente.
-  Pendiente para fases siguientes: registro de visitas (Fase 5).
+- **Fase 5 (Registro de visitas) — completada**: la administradora crea
+  una visita (`/admin/visits/new?bookingId=`) desde una reserva aceptada o
+  completada — enlazado desde el detalle de la reserva ("Crear visita" /
+  "Ver visita" según exista ya). Formulario con fecha/hora, duración,
+  estado general, checklist de 7 cuidados (checkboxes nativos), notas
+  rápidas e incidencias. Detalle de visita (`/admin/visits/[visitId]`)
+  muestra el checklist marcado y las notas. Aún no visible para el
+  cliente (RLS: solo cuando exista un informe publicado — Fase 7).
+  Verificado extremo a extremo: crear visita desde una reserva aceptada,
+  ver su detalle, y que el enlace cambia a "Ver visita" tras crearla.
+  Pendiente para fases siguientes: diario automático con IA (Fase 6).

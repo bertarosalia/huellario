@@ -1,7 +1,10 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBookingById } from "@/features/bookings/queries";
+import { getVisitByBookingId } from "@/features/visits/queries";
 import { BookingStatusBadge } from "@/components/bookings/booking-status-badge";
 import { BookingStatusActions } from "@/components/admin/booking-status-actions";
+import { Button } from "@/components/ui/button";
 import type { BookingWithRelations } from "@/features/bookings/types";
 
 const PET_CARE_FIELDS: Array<{
@@ -29,6 +32,9 @@ export default async function AdminBookingDetailPage({
   if (!booking) {
     notFound();
   }
+
+  const canRegisterVisit = booking.status === "accepted" || booking.status === "completed";
+  const visit = canRegisterVisit ? await getVisitByBookingId(booking.id) : null;
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-16">
@@ -71,6 +77,21 @@ export default async function AdminBookingDetailPage({
           ))}
         </dl>
       </section>
+
+      {canRegisterVisit && (
+        <section className="flex items-center justify-between rounded-xl border p-4">
+          <h2 className="font-semibold">Visita</h2>
+          {visit ? (
+            <Button variant="outline" render={<Link href={`/admin/visits/${visit.id}`} />}>
+              Ver visita
+            </Button>
+          ) : (
+            <Button render={<Link href={`/admin/visits/new?bookingId=${booking.id}`} />}>
+              Crear visita
+            </Button>
+          )}
+        </section>
+      )}
 
       <BookingStatusActions bookingId={booking.id} status={booking.status} />
     </main>
