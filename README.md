@@ -44,11 +44,10 @@ Ver [`.env.example`](.env.example). Resumen:
 
 ## Estado del proyecto
 
-- **Sprint 0 (Fase 0) — en curso**: proyecto Next.js + TypeScript + Tailwind
-  + shadcn/ui inicializado, estructura de carpetas creada, wrappers de
-  Supabase y OpenAI creados sin lógica de negocio, `.env.example`
-  documentado. Pendiente: crear proyecto real en Supabase y validar la
-  primera conexión.
+- **Sprint 0 (Fase 0) — completada**: proyecto Next.js + TypeScript +
+  Tailwind + shadcn/ui inicializado, estructura de carpetas creada, wrappers
+  de Supabase y OpenAI, `.env.example` documentado. Proyecto real de
+  Supabase creado y conectado (`.env.local` configurado).
 - **Identidad visual aplicada**: paleta (terracota/salvia), tipografía
   (Public Sans) y radios de borde definidos en `src/app/globals.css` a
   partir de un prototipo visual (Stitch). Landing pública (`(public)/page.tsx`)
@@ -59,4 +58,12 @@ Ver [`.env.example`](.env.example). Resumen:
   datos estructurados JSON-LD (`schema.org/Service`) en la landing, y
   `noindex` en las áreas privadas `(client)` y `admin`. Recuerda configurar
   `NEXT_PUBLIC_SITE_URL` con la URL real al desplegar.
-- **Fase 1 (Base de datos y autenticación)**: no iniciada.
+- **Fase 1 (Base de datos y autenticación) — completada**: esquema SQL y
+  políticas RLS aplicados y verificados en Supabase (ver
+  [`database/schema-notes.md`](database/schema-notes.md)). Registro
+  (`/register`) e inicio de sesión (`/login`) implementados con Supabase
+  Auth, redirección según rol tras login, protección de `(client)` (sesión)
+  y `admin` (sesión + rol admin, comprobado en servidor), y cierre de
+  sesión. Todo verificado extremo a extremo contra el proyecto real.
+  Pendiente para fases siguientes: gestión de mascotas (Fase 3), reservas
+  (Fase 4).
