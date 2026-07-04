@@ -20,6 +20,21 @@ pnpm dev
 
 Abre [http://localhost:3000](http://localhost:3000).
 
+## Tests
+
+```bash
+pnpm test        # ejecuta toda la suite una vez
+pnpm test:watch  # modo watch
+```
+
+Cobertura actual (Fase 10, flujos críticos según `CLAUDE.md`): validaciones
+de todos los formularios (auth, mascotas, reservas, visitas, reseñas) y la
+construcción del prompt de IA — incluye un test que falla si algún dato de
+contacto del cliente se filtra al prompt (minimización de datos). Los
+permisos de acceso (RLS) no tienen test unitario propio: se verifican
+manualmente contra el proyecto real de Supabase en cada fase (ver
+`database/schema-notes.md`).
+
 ## Variables de entorno
 
 Ver [`.env.example`](.env.example). Resumen:
@@ -150,4 +165,13 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   pedía el alcance funcional. Verificado extremo a extremo: crear reseña
   → moderar → visible en la web pública para un visitante sin sesión.
 
-Pendiente: testing/despliegue (Fase 10).
+- **Fase 10 (Testing, refinamiento y despliegue) — en curso**: Vitest +
+  React Testing Library configurados y con 37 tests pasando (validaciones
+  de todos los formularios críticos + minimización de datos hacia la IA +
+  un test de componente). Ver `pnpm test` y detalle en `docs/arquitectura.md`
+  (incluye por qué algunas devDependencies quedan fijadas a versiones
+  concretas, por compatibilidad con el Node del entorno).
+  Pendiente dentro de esta fase: revisión sistemática de responsive
+  móvil/escritorio, repaso de estados vacíos y mensajes de error, y
+  despliegue en Vercel (requiere acción tuya: conectar el repo, configurar
+  variables de entorno de producción).

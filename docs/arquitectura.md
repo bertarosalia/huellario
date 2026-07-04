@@ -79,8 +79,36 @@ registro), no Radix: los componentes interactivos (`Button`, etc.) reciben
 una prop `render` en vez de `asChild` para delegar el elemento renderizado
 (p. ej. `<Button render={<Link href="/login" />}>`).
 
+## Testing (Fase 10)
+
+Vitest + React Testing Library, configurados en `vitest.config.mts` (no
+`.ts`: con `.ts` la config se cargaba como CJS y fallaba con
+`ERR_REQUIRE_ESM` en este proyecto; `.mts` fuerza carga ESM sin depender
+de `"type": "module"` en `package.json`).
+
+**Versiones de devDependencies fijadas por debajo de la última, a
+propósito** — no son un descuido, son compatibilidad con el Node instalado
+en este entorno (`v21.6.1`):
+
+- `vitest` en `^3` (no `^4`): la v4 arrastra una Vite basada en Rolldown
+  que usa `styleText` de `node:util`, disponible solo desde Node `20.12`/`21.7`.
+- `@vitejs/plugin-react` en `^4` (no `^6`): la v6 exige Vite `^8`; este
+  proyecto queda en Vite `7.x` por la restricción anterior.
+- `jsdom` en `^25` (no `^29`): la v29 tiene una dependencia
+  (`html-encoding-sniffer` → `@exodus/bytes`) con un `require()` de un
+  módulo ESM que rompe en este Node.
+
+Si se actualiza la versión de Node del entorno más adelante, se puede
+revisar si estas fijaciones siguen siendo necesarias.
+
+Lógica de negocio separada de `generate-report.ts` (que importa
+`server-only`, no cargable en tests) hacia `lib/ai/prompt.ts` (funciones
+puras: construcción del prompt, formateo del texto final), específicamente
+para poder testear la minimización de datos hacia la IA.
+
 ## Estado actual
 
-Fases 0-6 completadas (ver "Estado del proyecto" en `README.md` para el
-detalle por fase). Wrappers de Supabase y de IA (`lib/ai/client.ts`,
-`lib/ai/generate-report.ts`, Google Gemini) en uso desde la Fase 6.
+Fases 0-9 completadas, Fase 10 en curso (ver "Estado del proyecto" en
+`README.md` para el detalle por fase). Wrappers de Supabase y de IA
+(`lib/ai/client.ts`, `lib/ai/generate-report.ts`, Google Gemini) en uso
+desde la Fase 6.
