@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { PHOTOS_BUCKET, validatePhotoFile } from "@/lib/supabase/storage";
 import { petFormSchema, type PetFormInput } from "./schemas";
 
 export type PetActionState = {
@@ -113,6 +114,48 @@ export async function updatePetAction(
   revalidatePath("/pets");
   revalidatePath(`/pets/${petId}`);
   redirect(`/pets/${petId}`);
+}
+
+export async function uploadPetPhotoAction(
+  petId: string,
+  _prevState: PetActionState,
+  formData: FormData,
+): Promise<PetActionState> {
+  const file = formData.get("photo");
+
+  if (!(file instanceof File) || file.size === 0) {
+    return { error: "Selecciona una imagen" };
+  }
+
+  const validationError = validatePhotoFile(file);
+  if (validationError) {
+    return { error: validationError };
+  }
+
+  const supabase = await createClient();
+  const extension = file.name.split(".").pop() || "jpg";
+  const path = `pets/${petId}/main-${Date.now()}.${extension}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from(PHOTOS_BUCKET)
+    .upload(path, file, { contentType: file.type });
+
+  if (uploadError) {
+    return { error: "No se pudo subir la imagen" };
+  }
+
+  const { error: updateError } = await supabase
+    .from("pets")
+    .update({ main_photo_url: path })
+    .eq("id", petId);
+
+  if (updateError) {
+    return { error: "No se pudo asociar la imagen a la mascota" };
+  }
+
+  revalidatePath("/pets");
+  revalidatePath(`/pets/${petId}`);
+  return {};
 }
 
 export async function deletePetAction(petId: string) {

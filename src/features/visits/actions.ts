@@ -3,7 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { PHOTOS_BUCKET, validatePhotoFile } from "@/lib/supabase/storage";
 import { visitFormSchema, type VisitFormInput } from "./schemas";
+
+export type VisitPhotoActionState = {
+  error?: string;
+};
 
 export type VisitActionState = {
   error?: string;
@@ -88,4 +93,47 @@ export async function createVisitAction(
 
   revalidatePath(`/admin/bookings/${data.bookingId}`);
   redirect(`/admin/bookings/${data.bookingId}`);
+}
+
+export async function uploadVisitPhotoAction(
+  visitId: string,
+  petId: string,
+  _prevState: VisitPhotoActionState,
+  formData: FormData,
+): Promise<VisitPhotoActionState> {
+  const file = formData.get("photo");
+
+  if (!(file instanceof File) || file.size === 0) {
+    return { error: "Selecciona una imagen" };
+  }
+
+  const validationError = validatePhotoFile(file);
+  if (validationError) {
+    return { error: validationError };
+  }
+
+  const supabase = await createClient();
+  const extension = file.name.split(".").pop() || "jpg";
+  const path = `visits/${visitId}/${Date.now()}.${extension}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from(PHOTOS_BUCKET)
+    .upload(path, file, { contentType: file.type });
+
+  if (uploadError) {
+    return { error: "No se pudo subir la imagen" };
+  }
+
+  const { error: insertError } = await supabase.from("visit_photos").insert({
+    visit_id: visitId,
+    pet_id: petId,
+    storage_path: path,
+  });
+
+  if (insertError) {
+    return { error: "No se pudo asociar la imagen a la visita" };
+  }
+
+  revalidatePath(`/admin/visits/${visitId}`);
+  return {};
 }

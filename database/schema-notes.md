@@ -18,6 +18,8 @@ automatizar más adelante en la Fase 10 si hace falta).
    desde la app (queda como `client` por trigger) y luego, desde el SQL
    Editor, `update public.profiles set role = 'admin' where id = '<uuid>';`
    — no existe (ni debe existir) una vía pública para autoasignarse admin.
+4. Pegar y ejecutar `migrations/0002_storage.sql` (Fase 8: bucket `photos`
+   y políticas RLS de `storage.objects`).
 
 ## Notas de diseño de las políticas RLS
 
@@ -43,6 +45,54 @@ automatizar más adelante en la Fase 10 si hace falta).
   estado `completed` (trigger `enforce_review_insert_rules`); las reseñas
   publicadas son visibles públicamente (para cualquier usuario, autenticado
   o no).
+- `storage.objects` (bucket `photos`, Fase 8): bucket **privado** (no
+  público), con convención de rutas `pets/{petId}/...` y
+  `visits/{visitId}/...`. Las políticas replican exactamente la misma
+  lógica que sus tablas equivalentes: `pets/*` visible/editable por la
+  propietaria de la mascota (o admin); `visits/*` visible por el cliente
+  solo si existe un informe publicado sobre esa visita para una mascota
+  suya, y solo la administradora puede subir/editar/borrar. Como el bucket
+  es privado, las imágenes se sirven con URLs firmadas de corta duración
+  (`createSignedUrl`/`createSignedUrls`, `src/lib/supabase/storage.ts`),
+  nunca con URLs públicas permanentes.
+
+### Hallazgo importante: RLS anidado dentro de políticas de Storage
+
+Durante la verificación se detectó que un `EXISTS` directo contra
+`public.pets` (o `public.reports`) **dentro de una política de
+`storage.objects`** no ve las filas, aunque el mismo usuario sí las vea
+consultando esas tablas normalmente vía REST, y aunque la misma expresión
+booleana evaluada "a mano" (simulando el rol y el JWT en el SQL Editor)
+da el resultado correcto. Se diagnosticó por descarte, probando la
+política real contra la API (no simulaciones): con solo `bucket_id`
+funciona; añadiendo la comprobación de carpeta también funciona; en
+cuanto se añade el `EXISTS` sobre una tabla con RLS, falla — incluso sin
+filtrar por propietario, es decir, la subconsulta no ve ninguna fila en
+absoluto en ese contexto.
+
+**Solución** (mismo patrón que `is_admin()`): envolver la comprobación en
+una función `SECURITY DEFINER` (`owns_pet`, `can_view_visit_photos`), que
+bypassa el RLS de la tabla referenciada de forma controlada. Al usarlas
+en vez del `EXISTS` directo, todo funciona correctamente.
+
+**Para recordar en fases futuras**: las políticas de tablas normales
+consultadas vía PostgREST (`bookings`, `visits`, `reports`, etc.) sí
+pueden usar `EXISTS` directo contra otra tabla con RLS sin problema —
+así están escritas desde la Fase 1 y funcionan correctamente. El problema
+descrito aquí es **específico de las políticas sobre `storage.objects`**,
+evaluadas por el servicio de Storage (separado de PostgREST). Si en el
+futuro se añaden más políticas de Storage que dependan de otras tablas,
+usar siempre una función `SECURITY DEFINER`, no un `EXISTS` directo.
+
+## Nota sobre `pets.main_photo_url` (Fase 8)
+
+El nombre de la columna sugiere una URL pública, pero al ser el bucket
+`photos` privado, en la práctica guarda la **ruta de Storage**
+(`pets/{petId}/main-...`), no una URL completa. Se resuelve a una URL
+firmada temporal en el momento de mostrarla (`getSignedPhotoUrl`). Se
+señala explícitamente aquí porque reinterpreta el propósito original del
+campo definido en el modelo de datos, aunque no cambia su tipo (`text`)
+ni ninguna relación.
 
 ## Tablas previstas
 
@@ -78,6 +128,13 @@ Definidos también en código en [`src/lib/constants.ts`](../src/lib/constants.t
 - [x] Flujo de registro/login implementado y verificado extremo a extremo
       contra el proyecto real (registro → confirmación de email → login →
       redirección por rol → protección de `/admin` → logout).
+- [x] Ejecutar `0002_storage.sql` (bucket + políticas de Storage,
+      incluyendo las funciones `SECURITY DEFINER` tras el hallazgo
+      anterior) en el proyecto real de Supabase.
+- [x] Subida de foto principal de mascota y de fotos de visita
+      implementadas y verificadas extremo a extremo contra Storage real
+      (subida, URL firmada, visualización en detalle/listado de mascota,
+      galería en visita admin y en el diario publicado del cliente).
 
 Detalle completo de campos y decisiones: ver Obsidian
 `4. Modelos-de-datos/Modelo-logico-de-base-de-datos.md`.

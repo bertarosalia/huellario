@@ -27,3 +27,12 @@ export type VisitWithRelations = Visit & {
   pets: { name: string; species: string } | null;
   bookings: { requested_date: string; requested_time: string } | null;
 };
+
+export type VisitPhoto = {
+  id: string;
+  visit_id: string;
+  pet_id: string;
+  storage_path: string;
+  alt_text: string | null;
+  created_at: string;
+};
