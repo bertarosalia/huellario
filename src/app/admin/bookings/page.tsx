@@ -12,31 +12,31 @@ export default async function AdminBookingsPage() {
       {bookings.length === 0 ? (
         <p className="text-muted-foreground">No hay reservas todavía.</p>
       ) : (
-        <div className="overflow-hidden rounded-xl border">
-          <table className="w-full text-left text-sm">
+        <div className="overflow-x-auto rounded-xl border">
+          <table className="w-full min-w-[640px] text-left text-sm">
             <thead className="bg-muted/50">
               <tr>
-                <th className="px-4 py-3 font-medium">Cliente</th>
-                <th className="px-4 py-3 font-medium">Mascota</th>
-                <th className="px-4 py-3 font-medium">Servicio</th>
-                <th className="px-4 py-3 font-medium">Fecha</th>
-                <th className="px-4 py-3 font-medium">Estado</th>
+                <th className="whitespace-nowrap px-4 py-3 font-medium">Cliente</th>
+                <th className="whitespace-nowrap px-4 py-3 font-medium">Mascota</th>
+                <th className="whitespace-nowrap px-4 py-3 font-medium">Servicio</th>
+                <th className="whitespace-nowrap px-4 py-3 font-medium">Fecha</th>
+                <th className="whitespace-nowrap px-4 py-3 font-medium">Estado</th>
               </tr>
             </thead>
             <tbody className="divide-y">
               {bookings.map((booking) => (
                 <tr key={booking.id} className="hover:bg-muted/30">
-                  <td className="px-4 py-3">
+                  <td className="whitespace-nowrap px-4 py-3">
                     <Link href={`/admin/bookings/${booking.id}`} className="hover:underline">
                       {booking.profiles?.full_name ?? "—"}
                     </Link>
                   </td>
-                  <td className="px-4 py-3">{booking.pets?.name}</td>
-                  <td className="px-4 py-3">{booking.services?.name}</td>
-                  <td className="px-4 py-3">
+                  <td className="whitespace-nowrap px-4 py-3">{booking.pets?.name}</td>
+                  <td className="whitespace-nowrap px-4 py-3">{booking.services?.name}</td>
+                  <td className="whitespace-nowrap px-4 py-3">
                     {booking.requested_date} {booking.requested_time.slice(0, 5)}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="whitespace-nowrap px-4 py-3">
                     <BookingStatusBadge status={booking.status} />
                   </td>
                 </tr>

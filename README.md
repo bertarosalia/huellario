@@ -171,7 +171,14 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   un test de componente). Ver `pnpm test` y detalle en `docs/arquitectura.md`
   (incluye por qué algunas devDependencies quedan fijadas a versiones
   concretas, por compatibilidad con el Node del entorno).
-  Pendiente dentro de esta fase: revisión sistemática de responsive
-  móvil/escritorio, repaso de estados vacíos y mensajes de error, y
-  despliegue en Vercel (requiere acción tuya: conectar el repo, configurar
-  variables de entorno de producción).
+  Revisión responsive completada: repasadas en móvil (375px), tablet
+  (768px) y escritorio todas las pantallas principales (landing, auth,
+  dashboards, mascotas, reservas, visitas, informes, reseñas). Se encontró
+  y corrigió un bug real: el nav de cliente/administradora se cortaba en
+  móvil sin forma de acceder a los enlaces ni a "Cerrar sesión" — ahora usa
+  un menú `<details>/<summary>` nativo (accesible sin JS de más) por debajo
+  de `md`. También se corrigió la tabla de reservas admin, que quedaba
+  recortada (`overflow-hidden`) en vez de scrollable en pantallas estrechas.
+  Pendiente dentro de esta fase: repaso de estados vacíos y mensajes de
+  error, y despliegue en Vercel (requiere acción tuya: conectar el repo,
+  configurar variables de entorno de producción).
