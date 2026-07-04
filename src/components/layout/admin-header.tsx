@@ -18,6 +18,9 @@ export function AdminHeader() {
           <Link href="/admin/bookings" className="text-muted-foreground hover:text-foreground">
             Reservas
           </Link>
+          <Link href="/admin/reviews" className="text-muted-foreground hover:text-foreground">
+            Reseñas
+          </Link>
         </nav>
       </div>
       <form action={signOutAction}>

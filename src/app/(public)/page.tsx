@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PawPrint, CalendarCheck, FileText, ShieldCheck, HeartHandshake, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { getPublishedReviews } from "@/features/reviews/queries";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -76,7 +77,9 @@ const STRUCTURED_DATA = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
+  const reviews = await getPublishedReviews();
+
   return (
     <main className="flex-1">
       <script
@@ -150,6 +153,28 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {reviews.length > 0 && (
+        <section className="mx-auto max-w-5xl px-4 py-16">
+          <h2 className="mb-10 text-center text-2xl font-semibold">Reseñas verificadas</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {reviews.map((review) => (
+              <Card key={review.id}>
+                <CardContent>
+                  <p className="text-primary">
+                    {"★".repeat(review.rating)}
+                    {"☆".repeat(5 - review.rating)}
+                  </p>
+                  {review.comment && (
+                    <p className="mt-2 text-sm text-muted-foreground">{review.comment}</p>
+                  )}
+                  <p className="mt-2 text-xs text-muted-foreground">Cliente verificado</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }

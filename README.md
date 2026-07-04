@@ -140,4 +140,14 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   a extremo: subida de ambos tipos de foto y visualización correcta según
   el rol.
 
-Pendientes: reseñas (Fase 9, opcional), testing/despliegue (Fase 10).
+- **Fase 9 (Reseñas verificadas) — completada**: el cliente puede dejar una
+  reseña (puntuación 1-5 + comentario opcional) desde una reserva
+  `completed`, una única vez (restricción de BD por `booking_id` único +
+  trigger). Nace en estado `pending`; la administradora la modera en
+  `/admin/reviews` (Publicar/Ocultar). Solo las reseñas publicadas
+  aparecen en la landing pública, y sin datos privados de cliente ni
+  mascota (solo puntuación + comentario + "Cliente verificado"), tal como
+  pedía el alcance funcional. Verificado extremo a extremo: crear reseña
+  → moderar → visible en la web pública para un visitante sin sesión.
+
+Pendiente: testing/despliegue (Fase 10).
