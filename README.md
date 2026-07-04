@@ -124,5 +124,20 @@ Ver [`.env.example`](.env.example). Resumen:
 
 Con esto queda cerrado el flujo principal completo del MVP (registro →
 mascota → reserva → visita → diario con IA → publicación → consulta).
-Pendientes: fotografías (Fase 8), reseñas (Fase 9), testing/despliegue
-(Fase 10).
+
+- **Fase 8 (Fotografías) — completada**: Supabase Storage con bucket
+  privado único `photos` (rutas `pets/{petId}/...` y `visits/{visitId}/...`).
+  Subida de foto principal de mascota desde su detalle, y de fotos de
+  visita desde el detalle de visita (admin) — visibles en galería tanto
+  para la administradora como en el diario publicado del cliente. Las
+  imágenes se sirven siempre con URLs firmadas temporales, nunca públicas.
+  Durante la implementación se descubrió que las políticas de RLS sobre
+  `storage.objects` no pueden usar un `EXISTS` directo contra otra tabla
+  con RLS (ven cero filas, aunque la misma condición evaluada manualmente
+  o vía PostgREST sí funciona) — solución documentada en
+  `database/schema-notes.md`: envolver la comprobación en una función
+  `SECURITY DEFINER`, igual que ya hacía `is_admin()`. Verificado extremo
+  a extremo: subida de ambos tipos de foto y visualización correcta según
+  el rol.
+
+Pendientes: reseñas (Fase 9, opcional), testing/despliegue (Fase 10).

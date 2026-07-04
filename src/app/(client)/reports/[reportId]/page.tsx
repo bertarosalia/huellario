@@ -1,5 +1,8 @@
 import { notFound } from "next/navigation";
 import { getReportById } from "@/features/reports/queries";
+import { getVisitPhotos } from "@/features/visits/queries";
+import { getSignedPhotoUrls } from "@/lib/supabase/storage";
+import { VisitPhotoGallery } from "@/components/visits/visit-photo-gallery";
 
 export default async function ReportDetailPage({
   params,
@@ -13,6 +16,9 @@ export default async function ReportDetailPage({
     notFound();
   }
 
+  const photos = await getVisitPhotos(report.visit_id);
+  const photoUrls = await getSignedPhotoUrls(photos.map((p) => p.storage_path));
+
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-16">
       <div>
@@ -23,6 +29,8 @@ export default async function ReportDetailPage({
             : ""}
         </p>
       </div>
+
+      <VisitPhotoGallery photoUrls={photoUrls} />
 
       <article className="whitespace-pre-line rounded-xl border p-6 leading-relaxed">
         {report.final_text}

@@ -1,7 +1,10 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPetById } from "@/features/pets/queries";
 import { deletePetAction } from "@/features/pets/actions";
+import { getSignedPhotoUrl } from "@/lib/supabase/storage";
+import { PetPhotoUpload } from "@/components/pets/pet-photo-upload";
 import { Button } from "@/components/ui/button";
 
 const DETAIL_FIELDS: Array<{ label: string; key: keyof NonNullable<Awaited<ReturnType<typeof getPetById>>> }> = [
@@ -32,13 +35,25 @@ export default async function PetDetailPage({
   }
 
   const deleteWithId = deletePetAction.bind(null, pet.id);
+  const photoUrl = pet.main_photo_url ? await getSignedPhotoUrl(pet.main_photo_url) : null;
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-16">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">{pet.name}</h1>
-          <p className="text-muted-foreground">{pet.species}</p>
+        <div className="flex items-center gap-4">
+          {photoUrl && (
+            <Image
+              src={photoUrl}
+              alt={`Foto de ${pet.name}`}
+              width={64}
+              height={64}
+              className="size-16 rounded-full object-cover"
+            />
+          )}
+          <div>
+            <h1 className="text-2xl font-semibold">{pet.name}</h1>
+            <p className="text-muted-foreground">{pet.species}</p>
+          </div>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" render={<Link href={`/pets/${pet.id}/edit`} />}>
@@ -51,6 +66,8 @@ export default async function PetDetailPage({
           </form>
         </div>
       </div>
+
+      <PetPhotoUpload petId={pet.id} />
 
       <dl className="grid gap-4 sm:grid-cols-2">
         {DETAIL_FIELDS.filter(({ key }) => pet[key]).map(({ label, key }) => (
