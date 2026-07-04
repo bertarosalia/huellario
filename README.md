@@ -112,5 +112,17 @@ Ver [`.env.example`](.env.example). Resumen:
   fecha de generación/publicación. Verificado extremo a extremo con la API
   real de Gemini: generar informe desde una visita → texto coherente y
   fiel a los datos → publicar → badge de estado actualizado.
-  Pendiente para fases siguientes: consulta del informe publicado por el
-  cliente (Fase 7).
+- **Fase 7 (Consulta de informes por el cliente) — completada**: listado
+  (`/reports`) y detalle (`/reports/[reportId]`) de diarios publicados,
+  solo lectura, sin metadatos internos de IA (nunca se muestra modelo,
+  versión de prompt ni el texto sin editar). Enlace "Ver diario" desde el
+  detalle de reserva del cliente cuando ya existe informe publicado para
+  su visita. RLS garantiza que un cliente nunca vea informes en borrador
+  ni de otras mascotas. Verificado extremo a extremo: el diario publicado
+  en la Fase 6 aparece en el dashboard, el listado y el detalle de reserva
+  del cliente.
+
+Con esto queda cerrado el flujo principal completo del MVP (registro →
+mascota → reserva → visita → diario con IA → publicación → consulta).
+Pendientes: fotografías (Fase 8), reseñas (Fase 9), testing/despliegue
+(Fase 10).

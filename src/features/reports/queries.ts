@@ -27,3 +27,18 @@ export async function getReportByVisitId(visitId: string) {
   if (error) throw error;
   return data;
 }
+
+// RLS ya filtra: el cliente solo ve informes publicados de sus propias
+// mascotas (política reports_select_admin_or_published_own).
+export async function getPublishedReportsForCurrentUser() {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("reports")
+    .select(REPORT_RELATIONS_SELECT)
+    .eq("status", "published")
+    .order("published_at", { ascending: false })
+    .returns<ReportWithRelations[]>();
+
+  if (error) throw error;
+  return data;
+}

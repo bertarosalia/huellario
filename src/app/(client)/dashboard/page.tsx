@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { getCurrentUserWithProfile } from "@/features/auth/queries";
 import { getPetsForCurrentUser } from "@/features/pets/queries";
+import { getPublishedReportsForCurrentUser } from "@/features/reports/queries";
 import { Button } from "@/components/ui/button";
 
 export default async function ClientDashboardPage() {
   const { user, profile } = await getCurrentUserWithProfile();
   const pets = await getPetsForCurrentUser();
+  const reports = await getPublishedReportsForCurrentUser();
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-16">
@@ -23,6 +25,15 @@ export default async function ClientDashboardPage() {
             : `${pets.length} mascota${pets.length === 1 ? "" : "s"} registrada${pets.length === 1 ? "" : "s"}.`}
         </p>
         <Button render={<Link href="/pets" />}>Ver mascotas</Button>
+      </div>
+
+      <div className="flex items-center justify-between rounded-xl border p-4">
+        <p>
+          {reports.length === 0
+            ? "Todavía no tienes informes publicados."
+            : `${reports.length} informe${reports.length === 1 ? "" : "s"} publicado${reports.length === 1 ? "" : "s"}.`}
+        </p>
+        <Button render={<Link href="/reports" />}>Ver informes</Button>
       </div>
     </main>
   );

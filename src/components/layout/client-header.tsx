@@ -21,6 +21,9 @@ export function ClientHeader() {
           <Link href="/bookings" className="text-muted-foreground hover:text-foreground">
             Reservas
           </Link>
+          <Link href="/reports" className="text-muted-foreground hover:text-foreground">
+            Informes
+          </Link>
         </nav>
       </div>
       <form action={signOutAction}>
