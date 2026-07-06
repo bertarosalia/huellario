@@ -106,9 +106,29 @@ Lógica de negocio separada de `generate-report.ts` (que importa
 puras: construcción del prompt, formateo del texto final), específicamente
 para poder testear la minimización de datos hacia la IA.
 
+## Notificaciones por email (Fase 11)
+
+Se añade `resend` como proveedor de email transaccional (mismo criterio que
+Gemini: tier gratuito sin tarjeta, SDK simple, pensado para Vercel). Nuevo
+módulo `lib/email/` con el mismo patrón que `lib/ai/`: `client.ts`
+(`server-only`, wrapper del SDK), `templates.ts` (funciones puras, sin
+`server-only`, testeables) y `send.ts` (envío real, con try/catch propio
+para que un fallo de email nunca bloquee ni revierta una mutación de
+reserva — el email es un efecto secundario, no la operación crítica).
+
+`SUPABASE_SERVICE_ROLE_KEY` empieza a usarse en código a partir de esta
+fase (hasta ahora solo estaba documentada): `lib/supabase/admin.ts` la usa
+en un único punto acotado —`supabase.auth.admin.getUserById()`— para
+resolver el email de un cliente a partir de `client_id`, ya que `profiles`
+no duplica el email (vive en `auth.users`). No se usa para nada más.
+
+Disparo: `createBookingAction` (nueva solicitud → email a `ADMIN_EMAIL` +
+confirmación al cliente) y `updateBookingStatusAction` (cambio de estado →
+email de resolución al cliente) en `features/bookings/actions.ts`.
+
 ## Estado actual
 
-Fases 0-9 completadas, Fase 10 en curso (ver "Estado del proyecto" en
+Fases 0-10 completadas, Fase 11 en curso (ver "Estado del proyecto" en
 `README.md` para el detalle por fase). Wrappers de Supabase y de IA
 (`lib/ai/client.ts`, `lib/ai/generate-report.ts`, Google Gemini) en uso
-desde la Fase 6.
+desde la Fase 6; wrapper de email (`lib/email/`) desde la Fase 11.

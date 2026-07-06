@@ -47,6 +47,9 @@ Ver [`.env.example`](.env.example). Resumen:
 | `GEMINI_API_KEY` | solo servidor | Generación de informes con IA (Google Gemini, tier gratuito) |
 | `GEMINI_MODEL` | solo servidor | Modelo de Gemini a usar (opcional, por defecto `gemini-2.5-flash`) |
 | `NEXT_PUBLIC_SITE_URL` | cliente y servidor | URL pública del sitio (SEO: metadata, sitemap, robots) |
+| `RESEND_API_KEY` | solo servidor | Envío de emails transaccionales (Resend, tier gratuito) |
+| `EMAIL_FROM` | solo servidor | Remitente de los emails (dominio sandbox de Resend hasta verificar uno propio) |
+| `ADMIN_EMAIL` | solo servidor | Destinatario de las notificaciones de nueva solicitud de reserva |
 
 `.env.local` nunca se sube al repositorio.
 
@@ -165,7 +168,7 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   pedía el alcance funcional. Verificado extremo a extremo: crear reseña
   → moderar → visible en la web pública para un visitante sin sesión.
 
-- **Fase 10 (Testing, refinamiento y despliegue) — en curso**: Vitest +
+- **Fase 10 (Testing, refinamiento y despliegue) — completada**: Vitest +
   React Testing Library configurados y con 37 tests pasando (validaciones
   de todos los formularios críticos + minimización de datos hacia la IA +
   un test de componente). Ver `pnpm test` y detalle en `docs/arquitectura.md`
@@ -190,3 +193,17 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   en cada push), variables de entorno de producción configuradas
   (Supabase, Gemini, `NEXT_PUBLIC_SITE_URL`). En producción en
   **https://huellario.vercel.app**.
+
+- **Fase 11 (Notificaciones por email de reservas) — completada**: al
+  crear una solicitud de reserva, la administradora recibe un email a
+  `ADMIN_EMAIL` con los datos clave, y el cliente recibe una confirmación
+  de recepción indicando el plazo de respuesta
+  (`BOOKING_RESPONSE_SLA_DAYS` en `lib/constants.ts`). Al cambiar el
+  estado de una reserva (aceptar/rechazar/completar/cancelar), el cliente
+  recibe un email con la resolución. Proveedor: Resend (tier gratuito).
+  Nuevo módulo `lib/email/` (mismo patrón que `lib/ai/`: cliente
+  `server-only`, plantillas puras testeables, envío con manejo de errores
+  que nunca bloquea la reserva). Primer uso en código de
+  `SUPABASE_SERVICE_ROLE_KEY`, acotado a `lib/supabase/admin.ts` para
+  resolver el email de un cliente por id. 8 tests nuevos de plantillas
+  (45 en total). Detalle en `docs/arquitectura.md`.
