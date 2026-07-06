@@ -116,14 +116,14 @@ módulo `lib/email/` con el mismo patrón que `lib/ai/`: `client.ts`
 para que un fallo de email nunca bloquee ni revierta una mutación de
 reserva — el email es un efecto secundario, no la operación crítica).
 
-**Pendiente explícito — cuenta de Resend en modo sandbox**: mientras no se
-verifique un dominio propio en resend.com/domains, Resend solo permite
-enviar a la dirección con la que se creó la cuenta. Esto significa que, en
-el estado actual, **ningún email llega a destinatarios reales** (ni
-`ADMIN_EMAIL` ni los clientes) — los envíos fallan en silencio (por
-diseño, no bloquean la reserva) pero no hay entrega real. No es un bug de
-código: requiere que el propietario del proyecto tenga un dominio propio y
-lo verifique en Resend para salir del sandbox.
+**Resuelto — dominio propio verificado en Resend**: se compró `huellario.com`
+(Porkbun) y se verificó en resend.com/domains (registros DNS TXT/CNAME).
+`EMAIL_FROM` pasa de `onboarding@resend.dev` (sandbox, solo entregaba a la
+dirección de la cuenta) a `notificaciones@huellario.com` — dirección de
+solo envío, sin buzón real detrás (no hace falta: Resend solo necesita el
+dominio verificado para autenticar el envío, no una cuenta de correo).
+Con esto el sandbox queda superado: los emails llegan a cualquier
+destinatario, tanto `ADMIN_EMAIL` como los clientes.
 
 ## Bugs encontrados y corregidos en verificación de producción
 
