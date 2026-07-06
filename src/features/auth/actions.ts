@@ -9,6 +9,22 @@ export type AuthActionState = {
   success?: boolean;
 };
 
+// Supabase Auth devuelve sus mensajes de error en inglés; se traducen los
+// casos habituales para mantener el tono en español del resto de la app.
+function translateSignUpError(message: string): string {
+  const normalized = message.toLowerCase();
+  if (normalized.includes("already registered") || normalized.includes("already exists")) {
+    return "Ya existe una cuenta con ese email.";
+  }
+  if (normalized.includes("password")) {
+    return "La contraseña no cumple los requisitos mínimos.";
+  }
+  if (normalized.includes("email") && normalized.includes("invalid")) {
+    return "El email no es válido.";
+  }
+  return "No se pudo completar el registro. Inténtalo de nuevo.";
+}
+
 export async function registerAction(
   _prevState: AuthActionState,
   formData: FormData,
@@ -39,7 +55,7 @@ export async function registerAction(
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: translateSignUpError(error.message) };
   }
 
   return { success: true };
