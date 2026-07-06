@@ -207,3 +207,13 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   `SUPABASE_SERVICE_ROLE_KEY`, acotado a `lib/supabase/admin.ts` para
   resolver el email de un cliente por id. 8 tests nuevos de plantillas
   (45 en total). Detalle en `docs/arquitectura.md`.
+  **Pendiente**: la cuenta de Resend está en modo sandbox y solo entrega
+  a la dirección con la que se creó la cuenta — para que los emails
+  lleguen a destinatarios reales (admin y clientes) hace falta verificar
+  un dominio propio en resend.com/domains.
+  Verificando en producción se encontraron y corrigieron dos bugs más:
+  la subida de fotos fallaba con fotos reales de móvil por el límite de
+  1MB por defecto de las Server Actions de Next.js (ahora `6mb` en
+  `next.config.ts`), y la página de revisión del informe de IA no tenía
+  forma de volver a la visita (ahora tiene un enlace "Volver a la
+  visita").

@@ -116,6 +116,29 @@ módulo `lib/email/` con el mismo patrón que `lib/ai/`: `client.ts`
 para que un fallo de email nunca bloquee ni revierta una mutación de
 reserva — el email es un efecto secundario, no la operación crítica).
 
+**Pendiente explícito — cuenta de Resend en modo sandbox**: mientras no se
+verifique un dominio propio en resend.com/domains, Resend solo permite
+enviar a la dirección con la que se creó la cuenta. Esto significa que, en
+el estado actual, **ningún email llega a destinatarios reales** (ni
+`ADMIN_EMAIL` ni los clientes) — los envíos fallan en silencio (por
+diseño, no bloquean la reserva) pero no hay entrega real. No es un bug de
+código: requiere que el propietario del proyecto tenga un dominio propio y
+lo verifique en Resend para salir del sandbox.
+
+## Bugs encontrados y corregidos en verificación de producción
+
+- **Subida de fotos bloqueada por el límite de Server Actions de
+  Next.js**: por defecto Next.js limita el payload de una Server Action a
+  1MB, pero `MAX_PHOTO_SIZE_BYTES` (`lib/supabase/storage.ts`) permite
+  fotos de hasta 5MB — cualquier foto real de móvil (2-8MB típico)
+  quedaba bloqueada antes de llegar a la validación propia de la app. Se
+  añade `experimental.serverActions.bodySizeLimit: "6mb"` en
+  `next.config.ts`.
+- **Sin navegación de vuelta tras generar un informe con IA**: la página
+  `/admin/reports/[reportId]/edit` no tenía ningún enlace de vuelta a la
+  visita/reserva de origen. Se añade un enlace "Volver a la visita"
+  usando `report.visit_id` (ya disponible en el tipo `Report`).
+
 `SUPABASE_SERVICE_ROLE_KEY` empieza a usarse en código a partir de esta
 fase (hasta ahora solo estaba documentada): `lib/supabase/admin.ts` la usa
 en un único punto acotado —`supabase.auth.admin.getUserById()`— para
