@@ -210,7 +210,10 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   Dominio propio `huellario.com` (Porkbun) verificado en Resend —
   `EMAIL_FROM=notificaciones@huellario.com` — con lo que los emails ya
   llegan a cualquier destinatario real (admin y clientes), no solo a la
-  dirección de la cuenta de Resend.
+  dirección de la cuenta de Resend. Verificados extremo a extremo en
+  producción los tres emails: nueva solicitud a la administradora,
+  confirmación de recepción al cliente, y resolución al cambiar el
+  estado de la reserva.
   Verificando en producción se encontraron y corrigieron dos bugs más:
   la subida de fotos fallaba con fotos reales de móvil por el límite de
   1MB por defecto de las Server Actions de Next.js (ahora `6mb` en
