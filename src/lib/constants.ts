@@ -21,3 +21,5 @@ export type ReportStatus = (typeof REPORT_STATUSES)[number];
 
 export const REVIEW_STATUSES = ["pending", "published", "hidden"] as const;
 export type ReviewStatus = (typeof REVIEW_STATUSES)[number];
+
+export const BOOKING_RESPONSE_SLA_DAYS = 2;
