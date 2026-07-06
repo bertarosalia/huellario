@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { getReportById } from "@/features/reports/queries";
 import { ReportEditor } from "@/components/reports/report-editor";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +19,14 @@ export default async function ReportEditPage({
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-16">
+      <Link
+        href={`/admin/visits/${report.visit_id}`}
+        className="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+      >
+        <ArrowLeft className="size-4" />
+        Volver a la visita
+      </Link>
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Revisar diario — {report.pets?.name}</h1>
