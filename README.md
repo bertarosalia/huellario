@@ -179,6 +179,14 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   un menú `<details>/<summary>` nativo (accesible sin JS de más) por debajo
   de `md`. También se corrigió la tabla de reservas admin, que quedaba
   recortada (`overflow-hidden`) en vez de scrollable en pantallas estrechas.
-  Pendiente dentro de esta fase: repaso de estados vacíos y mensajes de
-  error, y despliegue en Vercel (requiere acción tuya: conectar el repo,
-  configurar variables de entorno de producción).
+  Estados vacíos y mensajes de error revisados: `registerAction` ya traduce
+  los errores de Supabase a mensajes en español (antes se mostraban en
+  inglés tal cual), y se añadieron páginas propias `not-found.tsx`/`error.tsx`
+  con la identidad visual de Huellario en vez de las genéricas de Next.
+  También se corrigió `.gitignore`, que excluía por error `.env.example`
+  del repo (patrón `.env*` demasiado amplio).
+- **Fase 10 — despliegue en Vercel completado**: proyecto conectado al
+  repo de GitHub (`bertarosalia/huellario`, rama `main`, deploy automático
+  en cada push), variables de entorno de producción configuradas
+  (Supabase, Gemini, `NEXT_PUBLIC_SITE_URL`). En producción en
+  **https://huellario.vercel.app**.
