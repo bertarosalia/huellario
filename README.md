@@ -220,3 +220,12 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   `next.config.ts`), y la página de revisión del informe de IA no tenía
   forma de volver a la visita (ahora tiene un enlace "Volver a la
   visita").
+
+- **Footer de la landing pública**: nuevo componente
+  `components/layout/public-footer.tsx` (marca, enlaces legales,
+  copyright), a partir de un diseño de referencia (Stitch). Solo en el
+  área pública `(public)`, no en cliente/admin. Se crean las páginas
+  reales `/privacidad`, `/terminos` y `/contacto` (contenido mínimo,
+  ampliable), añadidas a `sitemap.ts`. El email de contacto público es
+  el Gmail personal de la administradora (`notificaciones@huellario.com`
+  es solo de envío, sin bandeja real).
