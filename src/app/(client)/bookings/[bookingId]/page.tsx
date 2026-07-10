@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { getBookingById } from "@/features/bookings/queries";
 import { getVisitByBookingId } from "@/features/visits/queries";
 import { getReportByVisitId } from "@/features/reports/queries";
@@ -26,6 +27,14 @@ export default async function BookingDetailPage({
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-16">
+      <Link
+        href="/bookings"
+        className="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+      >
+        <ArrowLeft className="size-4" />
+        Volver a mis reservas
+      </Link>
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">{booking.services?.name}</h1>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { getVisitById, getVisitPhotos } from "@/features/visits/queries";
 import { CHECKLIST_ITEMS } from "@/features/visits/schemas";
 import { getReportByVisitId } from "@/features/reports/queries";
@@ -37,6 +38,14 @@ export default async function VisitDetailPage({
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-16">
+      <Link
+        href={`/admin/bookings/${visit.booking_id}`}
+        className="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+      >
+        <ArrowLeft className="size-4" />
+        Volver a la reserva
+      </Link>
+
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">Visita de {visit.pets?.name}</h1>

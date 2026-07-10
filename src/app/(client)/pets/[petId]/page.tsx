@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { getPetById } from "@/features/pets/queries";
 import { deletePetAction } from "@/features/pets/actions";
 import { getSignedPhotoUrl } from "@/lib/supabase/storage";
@@ -39,6 +40,14 @@ export default async function PetDetailPage({
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-16">
+      <Link
+        href="/pets"
+        className="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+      >
+        <ArrowLeft className="size-4" />
+        Volver a mis mascotas
+      </Link>
+
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           {photoUrl && (
