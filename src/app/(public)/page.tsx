@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { PawPrint, CalendarCheck, FileText, ShieldCheck, HeartHandshake, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getPublishedReviews } from "@/features/reviews/queries";
+import { getSignedPhotoUrls } from "@/lib/supabase/storage";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -79,6 +81,11 @@ const STRUCTURED_DATA = {
 
 export default async function Home() {
   const reviews = await getPublishedReviews();
+  const photoPaths = reviews
+    .map((review) => review.pet_photo_path)
+    .filter((path): path is string => Boolean(path));
+  const photoUrls = await getSignedPhotoUrls(photoPaths);
+  const photoUrlByPath = new Map(photoPaths.map((path, index) => [path, photoUrls[index]]));
 
   return (
     <main className="flex-1">
@@ -158,20 +165,37 @@ export default async function Home() {
         <section className="mx-auto max-w-5xl px-4 py-16">
           <h2 className="mb-10 text-center text-2xl font-semibold">Reseñas verificadas</h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            {reviews.map((review) => (
-              <Card key={review.id}>
-                <CardContent>
-                  <p className="text-primary">
-                    {"★".repeat(review.rating)}
-                    {"☆".repeat(5 - review.rating)}
-                  </p>
-                  {review.comment && (
-                    <p className="mt-2 text-sm text-muted-foreground">{review.comment}</p>
-                  )}
-                  <p className="mt-2 text-xs text-muted-foreground">Cliente verificado</p>
-                </CardContent>
-              </Card>
-            ))}
+            {reviews.map((review) => {
+              const photoUrl = review.pet_photo_path
+                ? photoUrlByPath.get(review.pet_photo_path)
+                : null;
+
+              return (
+                <Card key={review.id}>
+                  <CardContent className="flex gap-4">
+                    {photoUrl && (
+                      <Image
+                        src={photoUrl}
+                        alt="Foto de la mascota"
+                        width={48}
+                        height={48}
+                        className="size-12 shrink-0 rounded-full object-cover"
+                      />
+                    )}
+                    <div>
+                      <p className="text-primary">
+                        {"★".repeat(review.rating)}
+                        {"☆".repeat(5 - review.rating)}
+                      </p>
+                      {review.comment && (
+                        <p className="mt-2 text-sm text-muted-foreground">{review.comment}</p>
+                      )}
+                      <p className="mt-2 text-xs text-muted-foreground">Cliente verificado</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </section>
       )}

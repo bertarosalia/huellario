@@ -17,6 +17,9 @@ export async function createReviewAction(
     bookingId: String(formData.get("bookingId") ?? ""),
     rating: formData.get("rating"),
     comment: String(formData.get("comment") ?? ""),
+    // formData siempre entrega string | null: comparar explícitamente en
+    // vez de z.coerce.boolean(), que trataría la cadena "false" como truthy.
+    showPetPhoto: formData.get("showPetPhoto") === "true",
   });
 
   if (!parsed.success) {
@@ -38,6 +41,7 @@ export async function createReviewAction(
     client_id: user.id,
     rating: data.rating,
     comment: data.comment || null,
+    show_pet_photo: data.showPetPhoto,
   });
 
   if (error) {

@@ -163,10 +163,12 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   `completed`, una única vez (restricción de BD por `booking_id` único +
   trigger). Nace en estado `pending`; la administradora la modera en
   `/admin/reviews` (Publicar/Ocultar). Solo las reseñas publicadas
-  aparecen en la landing pública, y sin datos privados de cliente ni
-  mascota (solo puntuación + comentario + "Cliente verificado"), tal como
-  pedía el alcance funcional. Verificado extremo a extremo: crear reseña
-  → moderar → visible en la web pública para un visitante sin sesión.
+  aparecen en la landing pública, sin datos privados de cliente ni
+  mascota más allá de puntuación + comentario + "Cliente verificado" (ver
+  excepción de la foto de mascota, con consentimiento explícito, más
+  abajo), tal como pedía el alcance funcional. Verificado extremo a
+  extremo: crear reseña → moderar → visible en la web pública para un
+  visitante sin sesión.
 
 - **Fase 10 (Testing, refinamiento y despliegue) — completada**: Vitest +
   React Testing Library configurados y con 37 tests pasando (validaciones
@@ -243,3 +245,18 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   componente `VisitPhotoManager` con un botón de eliminar por foto, solo
   en la vista de administradora (el cliente sigue viendo la galería de
   solo lectura sin controles, `VisitPhotoGallery`).
+
+- **Foto de mascota en reseñas públicas (con consentimiento) — completada**:
+  nuevo checkbox en el formulario de reseña ("Mostrar la foto de tu
+  mascota en la reseña pública"), visible solo si la mascota tiene foto
+  principal. Es consentimiento por reseña, no un ajuste persistente de la
+  mascota. Nueva columna `reviews.show_pet_photo` y dos funciones
+  `SECURITY DEFINER` (`can_view_pet_review_photo`,
+  `get_published_reviews_public`) que garantizan en la propia base de
+  datos que la foto solo se expone a un visitante anónimo cuando hay
+  consentimiento — mismo patrón ya usado para
+  `owns_pet`/`can_view_visit_photos` en la Fase 8. Verificado extremo a
+  extremo contra el proyecto real: dejar reseña con el checkbox marcado →
+  publicar como admin → foto visible en la landing sin sesión, y ausente
+  en reseñas sin consentimiento o de mascotas sin foto principal. Ver
+  detalle en `database/schema-notes.md`.

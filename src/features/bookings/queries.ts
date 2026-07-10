@@ -6,7 +6,7 @@ const BOOKING_RELATIONS_SELECT = `
   *,
   pets (
     name, species, breed, medical_info, medication, vet_contact,
-    behavior_notes, energy_level, fears_triggers, special_needs
+    behavior_notes, energy_level, fears_triggers, special_needs, main_photo_url
   ),
   services ( name, duration_minutes ),
   profiles ( full_name, phone )

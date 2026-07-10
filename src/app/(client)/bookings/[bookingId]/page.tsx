@@ -76,7 +76,7 @@ export default async function BookingDetailPage({
               Ya has dejado tu reseña para este servicio.
             </p>
           ) : (
-            <ReviewForm bookingId={booking.id} />
+            <ReviewForm bookingId={booking.id} hasPetPhoto={Boolean(booking.pets?.main_photo_url)} />
           )}
         </div>
       )}

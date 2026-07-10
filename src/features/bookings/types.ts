@@ -36,6 +36,7 @@ export type BookingWithRelations = Booking & {
     energy_level: string | null;
     fears_triggers: string | null;
     special_needs: string | null;
+    main_photo_url: string | null;
   } | null;
   services: { name: string; duration_minutes: number | null } | null;
   profiles: { full_name: string | null; phone: string | null } | null;

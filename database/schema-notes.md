@@ -20,6 +20,8 @@ automatizar más adelante en la Fase 10 si hace falta).
    — no existe (ni debe existir) una vía pública para autoasignarse admin.
 4. Pegar y ejecutar `migrations/0002_storage.sql` (Fase 8: bucket `photos`
    y políticas RLS de `storage.objects`).
+5. Pegar y ejecutar `migrations/0003_review_pet_photo.sql` (foto de mascota
+   en reseñas públicas, con consentimiento).
 
 ## Notas de diseño de las políticas RLS
 
@@ -84,6 +86,31 @@ evaluadas por el servicio de Storage (separado de PostgREST). Si en el
 futuro se añaden más políticas de Storage que dependan de otras tablas,
 usar siempre una función `SECURITY DEFINER`, no un `EXISTS` directo.
 
+## Foto de mascota en reseñas públicas (con consentimiento)
+
+`reviews.show_pet_photo` (boolean, default `false`): lo marca el propio
+cliente en el formulario de reseña, checkbox visible solo si su mascota
+tiene foto principal. Es un consentimiento por reseña, no un ajuste
+persistente de la mascota — decisión deliberada para no dar por hecho el
+consentimiento en reseñas futuras.
+
+Esto exige exponer datos que antes eran completamente privados
+(`pets.main_photo_url`) a un visitante anónimo, así que se añaden dos
+piezas nuevas, ambas `SECURITY DEFINER` siguiendo el patrón ya usado por
+`owns_pet`/`can_view_visit_photos` (ver hallazgo más abajo):
+
+- `can_view_pet_review_photo(pet_id)`: añadida a la política
+  `photos_select` de `storage.objects` para permitir lectura pública de
+  `pets/{petId}/...` solo cuando existe una reseña publicada de esa
+  mascota con `show_pet_photo = true`.
+- `get_published_reviews_public()`: sustituye la consulta directa a
+  `reviews` que hacía antes `getPublishedReviews()`. Devuelve exactamente
+  los campos seguros para la web pública (`id`, `rating`, `comment`,
+  `created_at`, `pet_photo_path`), calculando `pet_photo_path` como
+  `null` salvo que `show_pet_photo` sea `true` — así la minimización de
+  datos queda garantizada en la propia base de datos, no solo en el
+  código de la app.
+
 ## Nota sobre `pets.main_photo_url` (Fase 8)
 
 El nombre de la columna sugiere una URL pública, pero al ser el bucket
@@ -135,6 +162,11 @@ Definidos también en código en [`src/lib/constants.ts`](../src/lib/constants.t
       implementadas y verificadas extremo a extremo contra Storage real
       (subida, URL firmada, visualización en detalle/listado de mascota,
       galería en visita admin y en el diario publicado del cliente).
+- [x] Ejecutar `0003_review_pet_photo.sql` (foto de mascota en reseñas
+      públicas) en el proyecto real de Supabase, y verificado extremo a
+      extremo: dejar reseña con el checkbox marcado → publicar como admin
+      → foto visible en la landing sin sesión (y ausente en reseñas sin
+      consentimiento o de mascotas sin foto principal).
 
 Detalle completo de campos y decisiones: ver Obsidian
 `4. Modelos-de-datos/Modelo-logico-de-base-de-datos.md`.

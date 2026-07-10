@@ -12,7 +12,13 @@ import { Textarea } from "@/components/ui/textarea";
 
 type ReviewFormValues = z.input<typeof reviewFormSchema>;
 
-export function ReviewForm({ bookingId }: { bookingId: string }) {
+export function ReviewForm({
+  bookingId,
+  hasPetPhoto,
+}: {
+  bookingId: string;
+  hasPetPhoto: boolean;
+}) {
   const formId = useId();
   const [serverError, setServerError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,7 +30,7 @@ export function ReviewForm({ bookingId }: { bookingId: string }) {
     formState: { errors },
   } = useForm<ReviewFormValues>({
     resolver: zodResolver(reviewFormSchema),
-    defaultValues: { bookingId, rating: 5, comment: "" },
+    defaultValues: { bookingId, rating: 5, comment: "", showPetPhoto: false },
   });
 
   const onSubmit = handleSubmit(async (values) => {
@@ -35,6 +41,7 @@ export function ReviewForm({ bookingId }: { bookingId: string }) {
     formData.set("bookingId", values.bookingId);
     formData.set("rating", String(values.rating));
     formData.set("comment", values.comment ?? "");
+    formData.set("showPetPhoto", String(values.showPetPhoto));
 
     const result = await createReviewAction({}, formData);
     setIsSubmitting(false);
@@ -73,6 +80,20 @@ export function ReviewForm({ bookingId }: { bookingId: string }) {
         <Label htmlFor={`${formId}-comment`}>Comentario (opcional)</Label>
         <Textarea id={`${formId}-comment`} {...register("comment")} />
       </div>
+
+      {hasPetPhoto && (
+        <div className="flex items-center gap-2">
+          <input
+            id={`${formId}-show-pet-photo`}
+            type="checkbox"
+            className="size-4 rounded border-input"
+            {...register("showPetPhoto")}
+          />
+          <Label htmlFor={`${formId}-show-pet-photo`} className="font-normal">
+            Mostrar la foto de tu mascota en la reseña pública
+          </Label>
+        </div>
+      )}
 
       {serverError && <p className="text-sm text-destructive">{serverError}</p>}
 

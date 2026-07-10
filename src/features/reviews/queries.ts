@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
-import type { ReviewWithRelations } from "./types";
+import type { PublicReview, ReviewWithRelations } from "./types";
 
 const REVIEW_RELATIONS_SELECT = `
   *,
@@ -32,19 +32,18 @@ export async function getAllReviews() {
   return data;
 }
 
-// Para la web pública: RLS permite leer reseñas publicadas a cualquiera
-// (autenticado o no), pero sin unir profiles/pets/bookings — esas tablas
-// no son visibles para un visitante anónimo, y además el propio alcance
-// funcional pide explícitamente no mostrar datos privados de clientes ni
-// mascotas en la vista pública de reseñas.
+// Para la web pública: nunca se consulta `reviews`/`bookings`/`pets`
+// directamente (esas tablas no son visibles para un visitante anónimo, y
+// el alcance funcional pide explícitamente no mostrar datos privados de
+// clientes ni mascotas). En su lugar se llama a la función
+// get_published_reviews_public (SECURITY DEFINER, ver
+// database/migrations/0003_review_pet_photo.sql), que expone solo los
+// campos seguros — incluida la ruta de la foto de mascota, y solo cuando
+// el dueño ha dado su consentimiento explícito al dejar la reseña.
 export async function getPublishedReviews() {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("reviews")
-    .select("id, rating, comment, created_at")
-    .eq("status", "published")
-    .order("created_at", { ascending: false });
+  const { data, error } = await supabase.rpc("get_published_reviews_public");
 
   if (error) throw error;
-  return data;
+  return (data ?? []) as PublicReview[];
 }
