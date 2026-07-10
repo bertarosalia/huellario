@@ -137,3 +137,25 @@ export async function uploadVisitPhotoAction(
   revalidatePath(`/admin/visits/${visitId}`);
   return {};
 }
+
+export async function deleteVisitPhotoAction(
+  photoId: string,
+  visitId: string,
+  storagePath: string,
+) {
+  const supabase = await createClient();
+
+  const { error: storageError } = await supabase.storage.from(PHOTOS_BUCKET).remove([storagePath]);
+
+  if (storageError) {
+    throw new Error("No se pudo eliminar la imagen");
+  }
+
+  const { error: deleteError } = await supabase.from("visit_photos").delete().eq("id", photoId);
+
+  if (deleteError) {
+    throw new Error("No se pudo eliminar la imagen de la visita");
+  }
+
+  revalidatePath(`/admin/visits/${visitId}`);
+}

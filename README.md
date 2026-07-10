@@ -229,3 +229,17 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   ampliable), añadidas a `sitemap.ts`. El email de contacto público es
   el Gmail personal de la administradora (`notificaciones@huellario.com`
   es solo de envío, sin bandeja real).
+
+- **Navegación de vuelta en páginas de detalle**: además del informe de
+  IA (Fase 10), se añade enlace "Volver a..." en el resto de páginas de
+  solo lectura que no tenían ninguna forma de volver salvo el botón atrás
+  del navegador: mascota, reserva (cliente y admin), informe del cliente
+  y visita (admin). Las páginas con formulario ya tenían "Cancelar"
+  (`router.back()`), así que no lo necesitaban.
+
+- **Eliminar fotos de una visita**: hasta ahora solo se podían añadir,
+  nunca borrar. Nueva `deleteVisitPhotoAction` en
+  `features/visits/actions.ts` (borra de Storage y de `visit_photos`) y
+  componente `VisitPhotoManager` con un botón de eliminar por foto, solo
+  en la vista de administradora (el cliente sigue viendo la galería de
+  solo lectura sin controles, `VisitPhotoGallery`).

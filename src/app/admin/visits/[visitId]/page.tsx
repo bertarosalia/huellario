@@ -7,7 +7,7 @@ import { getReportByVisitId } from "@/features/reports/queries";
 import { getSignedPhotoUrls } from "@/lib/supabase/storage";
 import { GenerateReportButton } from "@/components/reports/generate-report-button";
 import { VisitPhotoUpload } from "@/components/visits/visit-photo-upload";
-import { VisitPhotoGallery } from "@/components/visits/visit-photo-gallery";
+import { VisitPhotoManager } from "@/components/visits/visit-photo-manager";
 import { Button } from "@/components/ui/button";
 
 const CHECKLIST_DB_KEYS: Record<string, keyof NonNullable<Awaited<ReturnType<typeof getVisitById>>>["care_checklist"]> = {
@@ -35,6 +35,9 @@ export default async function VisitDetailPage({
   const report = await getReportByVisitId(visit.id);
   const photos = await getVisitPhotos(visit.id);
   const photoUrls = await getSignedPhotoUrls(photos.map((p) => p.storage_path));
+  const photosWithUrls = photos
+    .map((photo, i) => ({ id: photo.id, storagePath: photo.storage_path, url: photoUrls[i] }))
+    .filter((photo): photo is { id: string; storagePath: string; url: string } => Boolean(photo.url));
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-16">
@@ -96,7 +99,7 @@ export default async function VisitDetailPage({
 
       <div className="flex flex-col gap-3">
         <h2 className="font-semibold">Fotos</h2>
-        <VisitPhotoGallery photoUrls={photoUrls} />
+        <VisitPhotoManager photos={photosWithUrls} visitId={visit.id} />
         <VisitPhotoUpload visitId={visit.id} petId={visit.pet_id} />
       </div>
     </main>

@@ -149,6 +149,17 @@ Disparo: `createBookingAction` (nueva solicitud → email a `ADMIN_EMAIL` +
 confirmación al cliente) y `updateBookingStatusAction` (cambio de estado →
 email de resolución al cliente) en `features/bookings/actions.ts`.
 
+## Aviso — directorio de trabajo temporal
+
+El entorno de desarrollo de esta autora ha trabajado en algunas sesiones
+sobre `/private/tmp/huellario`, que macOS limpia periódicamente (no solo
+al reiniciar: se ha observado que borra archivos no modificados
+recientemente aunque el sistema siga encendido, incluyendo objetos
+internos de `.git`). Esto ha causado dos pérdidas parciales de archivos
+durante el desarrollo. El directorio de trabajo real y permanente es
+`~/Documents/berta-docs/TFM/huellario-backup` (con el mismo remoto de
+GitHub) — cualquier sesión nueva debería partir de ahí, no de `/tmp`.
+
 ## Estado actual
 
 Fases 0-10 completadas, Fase 11 en curso (ver "Estado del proyecto" en
