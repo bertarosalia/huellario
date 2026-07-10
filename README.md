@@ -260,3 +260,8 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   publicar como admin → foto visible en la landing sin sesión, y ausente
   en reseñas sin consentimiento o de mascotas sin foto principal. Ver
   detalle en `database/schema-notes.md`.
+
+- **Favicon**: `src/app/icon.svg` (convención de App Router, sin metadata
+  manual) con la huella (`PawPrint` de lucide-react) sobre un círculo del
+  color primario de marca, sustituyendo el favicon por defecto de Next.js
+  que quedaba sin usar.
