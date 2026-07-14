@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { SITE_URL } from "@/lib/constants";
 import { loginSchema, registerSchema, type LoginInput, type RegisterInput } from "./schemas";
 
 export type AuthActionState = {
@@ -51,6 +52,14 @@ export async function registerAction(
         full_name: parsed.data.fullName,
         phone: parsed.data.phone || null,
       },
+      // Sin esto, Supabase construye el link del email de confirmación con
+      // el "Site URL" configurado en su propio dashboard (Authentication →
+      // URL Configuration) en vez de con la URL de este entorno — por eso
+      // los emails de producción apuntaban a localhost:3000. Al fijarlo
+      // aquí, el link es correcto tanto en local como en producción según
+      // NEXT_PUBLIC_SITE_URL, siempre que esa URL también esté en la lista
+      // de "Redirect URLs" permitidas del proyecto de Supabase.
+      emailRedirectTo: `${SITE_URL}/login`,
     },
   });
 
