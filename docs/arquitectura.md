@@ -138,6 +138,39 @@ destinatario, tanto `ADMIN_EMAIL` como los clientes.
   `/admin/reports/[reportId]/edit` no tenía ningún enlace de vuelta a la
   visita/reserva de origen. Se añade un enlace "Volver a la visita"
   usando `report.visit_id` (ya disponible en el tipo `Report`).
+- **Email de confirmación de registro apuntaba a `localhost:3000` en
+  producción**: `supabase.auth.signUp()` se llamaba sin `emailRedirectTo`
+  en `features/auth/actions.ts`, así que Supabase construía el link del
+  email con su propio "Site URL" (Authentication → URL Configuration en
+  el dashboard de Supabase) en vez de con la URL del entorno — y ese Site
+  URL se había quedado en `http://localhost:3000` desde la Fase 1, sin
+  actualizar al desplegar. Se fija explícitamente `emailRedirectTo`
+  (apuntando a `SITE_URL` + `/login`) en el `signUp()`, y se corrige
+  el Site URL / Redirect URLs del proyecto de Supabase a
+  `https://www.huellario.com`. `NEXT_PUBLIC_SITE_URL` (antes solo SEO)
+  pasa a tener también esta responsabilidad — debe coincidir con lo
+  configurado en Supabase.
+- **Dominio raíz `huellario.com` no servía la app**: solo
+  `www.huellario.com` estaba conectado a Vercel; la raíz tenía el
+  registro `ALIAS` por defecto de Porkbun apuntando a su página de
+  "dominio aparcado" (un `ALIAS`/`CNAME` no puede coexistir con otros
+  registros, así que además bloqueaba añadir el de Vercel). Se desactivó
+  el URL forwarding de Porkbun en la raíz, se añadió el registro `A` que
+  indicó Vercel, y se configuró `huellario.com` para redirigir a
+  `www.huellario.com` (dominio canónico elegido) desde el propio panel
+  de dominios de Vercel — evita contenido duplicado de cara a SEO.
+- **Registro con un email ya existente no daba ninguna pista al
+  usuario**: cuando el email ya tiene cuenta confirmada, Supabase
+  devuelve éxito en `signUp()` sin mandar email — es una protección
+  propia contra enumeración de cuentas (evita que se pueda averiguar qué
+  emails están registrados probando el formulario), no un bug. Se decide
+  no romper esa protección: el mensaje de éxito en
+  `(auth)/register/page.tsx` queda ambiguo a propósito (no confirma ni
+  desmiente si la cuenta ya existía) pero da una salida clara — enlace a
+  iniciar sesión, o a contacto si no recuerda la contraseña. Pendiente,
+  fuera de alcance de esta tarea: no existe todavía un flujo de
+  recuperación de contraseña propio (`resetPasswordForEmail`); por ahora
+  la única salida para ese caso es contactar directamente.
 
 `SUPABASE_SERVICE_ROLE_KEY` empieza a usarse en código a partir de esta
 fase (hasta ahora solo estaba documentada): `lib/supabase/admin.ts` la usa

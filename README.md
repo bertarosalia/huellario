@@ -194,7 +194,9 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   repo de GitHub (`bertarosalia/huellario`, rama `main`, deploy automático
   en cada push), variables de entorno de producción configuradas
   (Supabase, Gemini, `NEXT_PUBLIC_SITE_URL`). En producción en
-  **https://huellario.vercel.app**.
+  **https://www.huellario.com** (dominio propio conectado más adelante,
+  ver entrada posterior; `huellario.vercel.app` sigue funcionando pero ya
+  no es la URL canónica).
 
 - **Fase 11 (Notificaciones por email de reservas) — completada**: al
   crear una solicitud de reserva, la administradora recibe un email a
@@ -246,6 +248,11 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   en la vista de administradora (el cliente sigue viendo la galería de
   solo lectura sin controles, `VisitPhotoGallery`).
 
+- **Mejora la UI de subida de fotos**: el `<input type="file">` nativo
+  desnudo (mascota y visita) se sustituye por una zona clicable con
+  icono, borde punteado y estados hover/focus, usando `label`/`input`
+  reales (`useId`, sin JS a medida) para no perder accesibilidad nativa.
+
 - **Foto de mascota en reseñas públicas (con consentimiento) — completada**:
   nuevo checkbox en el formulario de reseña ("Mostrar la foto de tu
   mascota en la reseña pública"), visible solo si la mascota tiene foto
@@ -265,3 +272,24 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   manual) con la huella (`PawPrint` de lucide-react) sobre un círculo del
   color primario de marca, sustituyendo el favicon por defecto de Next.js
   que quedaba sin usar.
+
+- **Corregido: email de confirmación de registro apuntaba a localhost en
+  producción**: causa real — `supabase.auth.signUp()` no fijaba
+  `emailRedirectTo`, así que Supabase usaba su propio "Site URL" (dashboard
+  de Supabase), que se había quedado en `localhost:3000` desde la Fase 1.
+  Se añade `emailRedirectTo` (apuntando a `SITE_URL` + `/login`) en
+  `features/auth/actions.ts`, y se corrige el Site URL / Redirect URLs en
+  el dashboard de Supabase. De paso se detectó y arregló que el dominio
+  raíz `huellario.com` no servía la app (solo `www.huellario.com` estaba
+  conectado a Vercel): se liberó el registro `ALIAS` por defecto de
+  Porkbun, se añadió el `A` que pide Vercel, y se configuró la raíz para
+  redirigir a `www.huellario.com` (dominio canónico). Detalle completo en
+  `docs/arquitectura.md`.
+
+- **Mensaje ambiguo al registrarse con un email ya existente**: Supabase
+  no manda email ni da error en ese caso (protección propia contra
+  enumeración de cuentas), así que antes el usuario se quedaba sin saber
+  qué había pasado. El mensaje de éxito en `(auth)/register/page.tsx`
+  ahora cubre ambos casos sin delatar cuál ha ocurrido, con enlaces a
+  iniciar sesión o a contacto. Pendiente, fuera de alcance: no existe
+  todavía un flujo propio de recuperación de contraseña.
