@@ -329,3 +329,11 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   política de privacidad (`/privacidad`) mantiene intacta la mención
   explícita a la IA, porque ahí sí es información de tratamiento de
   datos, no un mensaje de marketing, y ocultarla no sería correcto.
+
+- **Header público consciente de la sesión**: nada bloqueaba nunca visitar
+  `/` estando logueada, pero `PublicHeader` era estático y siempre
+  mostraba "Iniciar sesión"/"Registrarse", incluso con sesión activa —
+  inconsistente y confuso. `(public)/layout.tsx` pasa a ser un Server
+  Component que consulta `getCurrentUserWithProfile()` y, si hay sesión,
+  el header muestra un único botón "Ir a mi panel" (a `/dashboard` o
+  `/admin/dashboard` según el rol) en vez de los botones de acceso.
