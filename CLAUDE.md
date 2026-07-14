@@ -231,6 +231,31 @@ Prioriza tests en flujos críticos, no cobertura exhaustiva:
 - Generación y publicación de informes.
 - Consulta privada de informes (que un cliente no vea datos de otro).
 
+## Checklist de cierre de tarea (no negociable)
+
+Antes de dar por completada cualquier tarea que añada o cambie lógica de
+negocio, validación o un flujo de usuario, comprueba explícitamente —no
+lo des por hecho de memoria, ni lo dejes para "luego":
+
+1. **Tests**: si se ha tocado una validación (Zod), un permiso/RLS, o uno
+   de los flujos críticos listados en "Testing", añade o actualiza el
+   test correspondiente en el mismo turno en que se hace el cambio, no
+   después. No hace falta test para cambios puramente visuales/de estilo
+   sin lógica (p. ej. rediseñar un botón), pero sí para cualquier campo
+   nuevo en un schema, cualquier regla de negocio nueva, o cualquier caso
+   límite no obvio (p. ej. un booleano que puede llegar como string).
+2. **Documentación**: si el cambio afecta a cómo se levanta el proyecto,
+   al modelo de datos, a una decisión de arquitectura/seguridad, o cierra
+   una tarea relevante de cara al TFM, actualiza `README.md` y/o el
+   `docs/*.md` correspondiente en el mismo turno — no en una pasada de
+   limpieza aparte al final de la sesión. Si el cambio es puramente
+   interno sin relevancia para quien lea el repo (p. ej. un refactor
+   trivial), no hace falta documentarlo.
+
+Si te saltas alguno de los dos puntos porque el cambio no lo necesita,
+está bien — pero decídelo conscientemente en el momento, no lo olvides
+sin más.
+
 ## Fuera de alcance del MVP (no implementar salvo que se pida explícitamente)
 
 Pagos online, chat en tiempo real, app móvil nativa, geolocalización/tracking GPS, notificaciones push, sistema multi-cuidador, facturación. Si una tarea parece requerir alguna de estas, avisa antes de implementarla.
