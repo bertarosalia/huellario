@@ -28,4 +28,14 @@ describe("reviewFormSchema", () => {
   it("rechaza bookingId inválido", () => {
     expect(reviewFormSchema.safeParse({ ...VALID, bookingId: "no-uuid" }).success).toBe(false);
   });
+
+  it("showPetPhoto por defecto es false si no se envía", () => {
+    const result = reviewFormSchema.safeParse(VALID);
+    expect(result.success && result.data.showPetPhoto).toBe(false);
+  });
+
+  it("acepta showPetPhoto true", () => {
+    const result = reviewFormSchema.safeParse({ ...VALID, showPetPhoto: true });
+    expect(result.success && result.data.showPetPhoto).toBe(true);
+  });
 });
