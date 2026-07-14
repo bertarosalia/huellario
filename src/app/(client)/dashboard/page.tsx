@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getCurrentUserWithProfile } from "@/features/auth/queries";
 import { getPetsForCurrentUser } from "@/features/pets/queries";
 import { getPublishedReportsForCurrentUser } from "@/features/reports/queries";
+import { DeleteAccountDialog } from "@/components/auth/delete-account-dialog";
 import { Button } from "@/components/ui/button";
 
 export default async function ClientDashboardPage() {
@@ -34,6 +35,16 @@ export default async function ClientDashboardPage() {
             : `${reports.length} informe${reports.length === 1 ? "" : "s"} publicado${reports.length === 1 ? "" : "s"}.`}
         </p>
         <Button render={<Link href="/reports" />}>Ver informes</Button>
+      </div>
+
+      <div className="flex items-center justify-between rounded-xl border border-destructive/30 p-4">
+        <div>
+          <p className="font-medium">Zona peligrosa</p>
+          <p className="text-sm text-muted-foreground">
+            Elimina tu cuenta y todos tus datos de forma permanente.
+          </p>
+        </div>
+        <DeleteAccountDialog />
       </div>
     </main>
   );

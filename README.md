@@ -291,5 +291,30 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   enumeración de cuentas), así que antes el usuario se quedaba sin saber
   qué había pasado. El mensaje de éxito en `(auth)/register/page.tsx`
   ahora cubre ambos casos sin delatar cuál ha ocurrido, con enlaces a
-  iniciar sesión o a contacto. Pendiente, fuera de alcance: no existe
-  todavía un flujo propio de recuperación de contraseña.
+  iniciar sesión o a contacto.
+
+- **Recuperar contraseña**: `/forgot-password` (pide email,
+  `resetPasswordForEmail`, mensaje de éxito ambiguo igual que en el
+  registro — no delata si el email existe) y `/reset-password` (nueva
+  contraseña, `updateUser`). El link del email trae la sesión de
+  recuperación en el fragmento de la URL, que solo el navegador puede
+  leer — `/reset-password` es un componente cliente que instancia el
+  cliente de Supabase del navegador para que la detecte y la deje en
+  cookies, y así la Server Action `updatePasswordAction` (cliente de
+  servidor, basado en cookies) también la vea. Enlace añadido en
+  `/login`.
+
+- **Cerrar cuenta**: nueva sección "Zona peligrosa" en el dashboard del
+  cliente, con diálogo de confirmación que exige escribir "ELIMINAR". El
+  borrado real (`deleteUserAccount` en `lib/supabase/admin.ts`, con
+  service role) hace dos cosas: limpia en Storage las fotos de las
+  mascotas del usuario y de sus visitas (no forman parte del cascade de
+  la base de datos, así que quedarían huérfanas si no se borran a mano —
+  se usa el cliente admin porque las fotos de visita solo son visibles
+  por RLS al propio cliente cuando el informe ya está publicado, y aquí
+  hace falta verlas todas), y después borra el usuario de
+  `auth.users`, lo que hace cascada en BD sobre `profiles` → `pets` →
+  `bookings`/`visits`/`reports`/`reviews` (ya estaba así definido desde
+  la Fase 1, no hizo falta cambiar ninguna FK). El id del usuario a
+  borrar sale siempre de la sesión del servidor, nunca de un parámetro
+  del formulario.

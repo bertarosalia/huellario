@@ -22,7 +22,8 @@ Cliente se registra
 
 - **Visitante no registrado**: solo accede a la parte pública.
 - **Cliente**: gestiona sus mascotas, solicita reservas, consulta informes
-  publicados de sus mascotas y puede dejar reseñas.
+  publicados de sus mascotas, puede dejar reseñas, recuperar su
+  contraseña y cerrar su cuenta (borrado permanente de sus datos).
 - **Administradora / pet sitter**: gestiona reservas, registra visitas,
   genera y publica informes.
 

@@ -4,24 +4,25 @@ import { useId, useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema, type LoginInput } from "@/features/auth/schemas";
-import { loginAction } from "@/features/auth/actions";
+import { forgotPasswordSchema, type ForgotPasswordInput } from "@/features/auth/schemas";
+import { requestPasswordResetAction } from "@/features/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
   const formId = useId();
   const [serverError, setServerError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<ForgotPasswordInput>({
+    resolver: zodResolver(forgotPasswordSchema),
   });
 
   const onSubmit = handleSubmit(async (values) => {
@@ -30,20 +31,37 @@ export default function LoginPage() {
 
     const formData = new FormData();
     formData.set("email", values.email);
-    formData.set("password", values.password);
 
-    const result = await loginAction({}, formData);
+    const result = await requestPasswordResetAction({}, formData);
     setIsSubmitting(false);
 
     if (result?.error) {
       setServerError(result.error);
+      return;
     }
+    setSubmitted(true);
   });
+
+  if (submitted) {
+    return (
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle>Revisa tu email</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            Si existe una cuenta con ese email, te hemos enviado un enlace para
+            restablecer tu contraseña.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle>Iniciar sesión</CardTitle>
+        <CardTitle>Recuperar contraseña</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
@@ -58,36 +76,16 @@ export default function LoginPage() {
             {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor={`${formId}-password`}>Contraseña</Label>
-            <Input
-              id={`${formId}-password`}
-              type="password"
-              autoComplete="current-password"
-              {...register("password")}
-            />
-            {errors.password && (
-              <p className="text-sm text-destructive">{errors.password.message}</p>
-            )}
-          </div>
-
           {serverError && <p className="text-sm text-destructive">{serverError}</p>}
 
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Entrando…" : "Iniciar sesión"}
+            {isSubmitting ? "Enviando…" : "Enviar enlace de recuperación"}
           </Button>
         </form>
 
         <p className="mt-4 text-center text-sm text-muted-foreground">
-          <Link href="/forgot-password" className="font-medium text-primary hover:underline">
-            ¿Olvidaste tu contraseña?
-          </Link>
-        </p>
-
-        <p className="mt-2 text-center text-sm text-muted-foreground">
-          ¿Todavía no tienes cuenta?{" "}
-          <Link href="/register" className="font-medium text-primary hover:underline">
-            Regístrate
+          <Link href="/login" className="font-medium text-primary hover:underline">
+            Volver a iniciar sesión
           </Link>
         </p>
       </CardContent>

@@ -2,8 +2,17 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { deleteUserAccount } from "@/lib/supabase/admin";
 import { SITE_URL } from "@/lib/constants";
-import { loginSchema, registerSchema, type LoginInput, type RegisterInput } from "./schemas";
+import {
+  deleteAccountSchema,
+  forgotPasswordSchema,
+  loginSchema,
+  registerSchema,
+  resetPasswordSchema,
+  type LoginInput,
+  type RegisterInput,
+} from "./schemas";
 
 export type AuthActionState = {
   error?: string;
@@ -102,6 +111,97 @@ export async function loginAction(
 
 export async function signOutAction() {
   const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/");
+}
+
+export async function requestPasswordResetAction(
+  _prevState: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const parsed = forgotPasswordSchema.safeParse({
+    email: String(formData.get("email") ?? ""),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Datos inválidos" };
+  }
+
+  const supabase = await createClient();
+  // Igual que signUp, resetPasswordForEmail no distingue en su respuesta
+  // si el email existe o no (protección contra enumeración de cuentas) —
+  // por eso el resultado siempre es { success: true } aquí, y el mensaje
+  // en la página es intencionadamente ambiguo.
+  await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+    redirectTo: `${SITE_URL}/reset-password`,
+  });
+
+  return { success: true };
+}
+
+export async function updatePasswordAction(
+  _prevState: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const parsed = resetPasswordSchema.safeParse({
+    password: String(formData.get("password") ?? ""),
+    confirmPassword: String(formData.get("confirmPassword") ?? ""),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Datos inválidos" };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return {
+      error: "El enlace ha caducado o no es válido. Solicita uno nuevo desde \"¿Olvidaste tu contraseña?\".",
+    };
+  }
+
+  const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
+  if (error) {
+    return { error: "No se pudo actualizar la contraseña. Inténtalo de nuevo." };
+  }
+
+  await supabase.auth.signOut();
+  redirect("/login");
+}
+
+export async function deleteAccountAction(
+  _prevState: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
+  const parsed = deleteAccountSchema.safeParse({
+    confirmation: String(formData.get("confirmation") ?? ""),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Datos inválidos" };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Debes iniciar sesión" };
+  }
+
+  // El id siempre sale de la sesión del servidor, nunca de un campo del
+  // formulario — para que esta acción nunca pueda usarse para borrar la
+  // cuenta de otra persona.
+  try {
+    await deleteUserAccount(user.id);
+  } catch {
+    return { error: "No se pudo eliminar la cuenta. Inténtalo de nuevo." };
+  }
+
   await supabase.auth.signOut();
   redirect("/");
 }

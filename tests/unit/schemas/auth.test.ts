@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { loginSchema, registerSchema } from "@/features/auth/schemas";
+import {
+  deleteAccountSchema,
+  forgotPasswordSchema,
+  loginSchema,
+  registerSchema,
+  resetPasswordSchema,
+} from "@/features/auth/schemas";
 
 describe("registerSchema", () => {
   const valid = {
@@ -59,5 +65,55 @@ describe("loginSchema", () => {
 
   it("rechaza contraseña vacía", () => {
     expect(loginSchema.safeParse({ email: "a@b.com", password: "" }).success).toBe(false);
+  });
+});
+
+describe("forgotPasswordSchema", () => {
+  it("acepta un email válido", () => {
+    expect(forgotPasswordSchema.safeParse({ email: "berta@example.com" }).success).toBe(true);
+  });
+
+  it("rechaza email inválido", () => {
+    expect(forgotPasswordSchema.safeParse({ email: "no-es-un-email" }).success).toBe(false);
+  });
+});
+
+describe("resetPasswordSchema", () => {
+  it("acepta contraseñas que coinciden y cumplen el mínimo", () => {
+    expect(
+      resetPasswordSchema.safeParse({
+        password: "supersegura123",
+        confirmPassword: "supersegura123",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rechaza si las contraseñas no coinciden", () => {
+    const result = resetPasswordSchema.safeParse({
+      password: "supersegura123",
+      confirmPassword: "otra-contraseña",
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].path).toContain("confirmPassword");
+    }
+  });
+
+  it("rechaza contraseña demasiado corta", () => {
+    expect(
+      resetPasswordSchema.safeParse({ password: "1234567", confirmPassword: "1234567" }).success,
+    ).toBe(false);
+  });
+});
+
+describe("deleteAccountSchema", () => {
+  it("acepta solo la palabra exacta ELIMINAR", () => {
+    expect(deleteAccountSchema.safeParse({ confirmation: "ELIMINAR" }).success).toBe(true);
+  });
+
+  it("rechaza cualquier otro texto, incluida una variación de mayúsculas", () => {
+    expect(deleteAccountSchema.safeParse({ confirmation: "eliminar" }).success).toBe(false);
+    expect(deleteAccountSchema.safeParse({ confirmation: "" }).success).toBe(false);
+    expect(deleteAccountSchema.safeParse({ confirmation: "borrar" }).success).toBe(false);
   });
 });

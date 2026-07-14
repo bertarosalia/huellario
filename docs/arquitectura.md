@@ -182,6 +182,42 @@ Disparo: `createBookingAction` (nueva solicitud → email a `ADMIN_EMAIL` +
 confirmación al cliente) y `updateBookingStatusAction` (cambio de estado →
 email de resolución al cliente) en `features/bookings/actions.ts`.
 
+## Recuperación de contraseña y cierre de cuenta
+
+**Recuperar contraseña**: flujo estándar de Supabase Auth
+(`resetPasswordForEmail` + `updateUser`), con el mismo `emailRedirectTo`
+explícito que ya usa el registro. El detalle técnico es cómo llega la
+sesión a `/reset-password`: el link del email trae los tokens en el
+fragmento de la URL (`#access_token=...&type=recovery`), que **solo el
+navegador puede leer** — nunca llega al servidor. Por eso
+`/reset-password` es un componente cliente: al montarse, instancia el
+cliente de Supabase del navegador (`lib/supabase/client.ts`), que detecta
+automáticamente ese fragmento y guarda la sesión en cookies (comportamiento
+por defecto de `createBrowserClient` de `@supabase/ssr`, pensado
+justamente para mantener sincronizados cliente y servidor). Con la cookie
+ya puesta, el envío del formulario sí puede resolverse con una Server
+Action normal (`updatePasswordAction`, cliente de servidor basado en
+cookies) — sin eso, `supabase.auth.getUser()` en el servidor no vería
+ninguna sesión y el cambio de contraseña fallaría siempre.
+
+**Cerrar cuenta**: la cascada de borrado en base de datos ya estaba bien
+montada desde la Fase 1 (`auth.users` → `profiles` → `pets` →
+`bookings`/`visits`/`reports`/`reviews`, todo `on delete cascade`, ver
+`database/migrations/0001_init.sql`), así que borrar la cuenta es
+sobre todo un problema de **Storage**, que no forma parte de esa cascada:
+las fotos de mascota y de visita quedarían huérfanas si no se borran a
+mano. `deleteUserAccount` (`lib/supabase/admin.ts`, nueva función sobre el
+cliente admin ya existente) hace, en este orden: (1) lista las fotos de
+las mascotas del usuario y las de sus visitas — con el cliente **admin**,
+no el del usuario, porque RLS solo deja ver las fotos de una visita al
+cliente cuando el informe ya está publicado, y aquí hace falta verlas
+todas, publicadas o no; (2) las borra de Storage; (3) borra el usuario de
+`auth.users` (`auth.admin.deleteUser`, requiere service role), lo que
+dispara la cascada de BD. El id del usuario a borrar sale siempre de
+`supabase.auth.getUser()` en el servidor, nunca de un campo del
+formulario — para que esta acción nunca pueda apuntar a la cuenta de otra
+persona.
+
 ## Aviso — directorio de trabajo temporal
 
 El entorno de desarrollo de esta autora ha trabajado en algunas sesiones
