@@ -337,3 +337,6 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   Component que consulta `getCurrentUserWithProfile()` y, si hay sesión,
   el header muestra un único botón "Ir a mi panel" (a `/dashboard` o
   `/admin/dashboard` según el rol) en vez de los botones de acceso.
+  El logo de `ClientHeader`/`AdminHeader` pasa de enlazar al propio
+  dashboard a enlazar siempre a `/` — la única forma de llegar a la
+  landing pública estando logueada era escribir la URL a mano.
