@@ -1,6 +1,6 @@
 export const SITE_NAME = "Huellario";
 export const SITE_DESCRIPTION =
-  "Gestión de servicios de pet sitting a domicilio, con diarios de visita generados automáticamente mediante IA.";
+  "Gestión de servicios de pet sitting a domicilio, con un diario personalizado de cada visita, revisado siempre por tu cuidadora antes de enviártelo.";
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 

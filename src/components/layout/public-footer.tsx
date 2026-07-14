@@ -23,8 +23,8 @@ export function PublicFooter() {
           ))}
         </nav>
         <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Huellario. Pet sitting a domicilio con diario de visita
-          generado por IA.
+          © {new Date().getFullYear()} Huellario. Pet sitting a domicilio con diario
+          personalizado de cada visita.
         </p>
       </div>
     </footer>

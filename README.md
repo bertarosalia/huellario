@@ -318,3 +318,14 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   la Fase 1, no hizo falta cambiar ninguna FK). El id del usuario a
   borrar sale siempre de la sesión del servidor, nunca de un parámetro
   del formulario.
+
+- **Tono de los textos públicos: menos "generado con IA", más "tu
+  cuidadora"**: la landing, su metadata/SEO y el footer dejan de decir
+  explícitamente que el diario lo genera una IA y pasan a hablar de un
+  diario personalizado "revisado y compartido contigo por tu cuidadora".
+  Decisión consciente: sigue siendo cierto en todo momento (un informe
+  nunca se autopublica, siempre lo revisa la administradora antes de
+  enviarlo — ver Fase 6), solo cambia el énfasis de marketing. La
+  política de privacidad (`/privacidad`) mantiene intacta la mención
+  explícita a la IA, porque ahí sí es información de tratamiento de
+  datos, no un mensaje de marketing, y ocultarla no sería correcto.

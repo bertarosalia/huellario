@@ -9,7 +9,7 @@ import { getSignedPhotoUrls } from "@/lib/supabase/storage";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: "Pet sitting a domicilio con diario de visita generado por IA",
+  title: "Pet sitting a domicilio con diario personalizado de cada visita",
   description: SITE_DESCRIPTION,
   alternates: {
     canonical: "/",
@@ -37,7 +37,7 @@ const STEPS = [
     icon: FileText,
     title: "Recibe el diario de la visita",
     description:
-      "Tras cada visita, un informe personalizado generado con IA y revisado antes de publicarse.",
+      "Tras cada visita, recibe un diario personalizado de tu cuidadora, siempre revisado antes de enviártelo.",
   },
 ];
 
@@ -50,7 +50,7 @@ const SERVICES = [
 
 const TRUST_MARKERS = [
   { icon: HeartHandshake, label: "Cuidado personalizado" },
-  { icon: Sparkles, label: "Diario con IA, revisado siempre por una persona" },
+  { icon: Sparkles, label: "Diario personalizado, revisado siempre por tu cuidadora" },
   { icon: ShieldCheck, label: "Tus datos, protegidos" },
 ];
 
@@ -98,9 +98,9 @@ export default async function Home() {
           Cuidado cercano para tu mascota, con un diario de cada visita.
         </h1>
         <p className="max-w-xl text-lg text-muted-foreground">
-          Gestiona reservas de pet sitting a domicilio y recibe un informe
-          personalizado tras cada visita, generado con IA y revisado antes de
-          llegar a ti.
+          Gestiona reservas de pet sitting a domicilio y recibe un diario
+          personalizado de cada visita, revisado y compartido contigo por tu
+          cuidadora.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button size="lg" render={<Link href="/register" />}>
