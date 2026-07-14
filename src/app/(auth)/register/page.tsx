@@ -54,8 +54,17 @@ export default function RegisterPage() {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            Te hemos enviado un correo de confirmación. Confirma tu cuenta
-            antes de iniciar sesión.
+            Si es la primera vez que te registras con este email, te hemos
+            enviado un correo para confirmar tu cuenta. Si ya tenías una
+            cuenta, puedes{" "}
+            <Link href="/login" className="font-medium text-primary hover:underline">
+              iniciar sesión
+            </Link>{" "}
+            directamente, o{" "}
+            <Link href="/contacto" className="font-medium text-primary hover:underline">
+              contactar con nosotros
+            </Link>{" "}
+            si no recuerdas tu contraseña.
           </p>
         </CardContent>
       </Card>
