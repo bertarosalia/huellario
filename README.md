@@ -340,3 +340,18 @@ mascota → reserva → visita → diario con IA → publicación → consulta).
   El logo de `ClientHeader`/`AdminHeader` pasa de enlazar al propio
   dashboard a enlazar siempre a `/` — la única forma de llegar a la
   landing pública estando logueada era escribir la URL a mano.
+
+- **Foto real en el hero de la landing**: `public/pet-sitter.jpeg` (foto
+  de la propia cuidadora con una mascota, no de stock). Tras varias
+  pruebas de layout (foto de fondo a pantalla completa con degradado,
+  descartada: la cara del perro caía justo donde iba el texto y no había
+  forma de encuadrar sin tapar una cosa o la otra), se quedó en foto y
+  texto en columnas separadas: apilados en móvil, en fila (foto a la
+  izquierda) a partir de `md`. Se le aplica un `filter` CSS sutil
+  (saturación/contraste) vía Tailwind, sin tocar el archivo original.
+
+- **Navbar con max-width de 1440px**: el fondo/borde de
+  `PublicHeader`/`ClientHeader`/`AdminHeader` sigue a todo lo ancho, pero
+  su contenido (logo + navegación) queda centrado con
+  `mx-auto max-w-[1440px]`, para que no se estire de más en monitores
+  muy anchos.

@@ -12,7 +12,7 @@ const NAV_LINKS = [
 export function AdminHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
-      <div className="flex h-16 items-center justify-between px-4 md:px-10">
+      <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-4 md:px-10">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2">
             <PawPrint className="size-6 text-primary" />
