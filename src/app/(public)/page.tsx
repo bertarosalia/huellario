@@ -93,22 +93,36 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCTURED_DATA) }}
       />
-      <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 py-20 text-center md:py-28">
-        <h1 className="text-3xl font-semibold tracking-tight text-balance md:text-5xl">
-          Cuidado cercano para tu mascota, con un diario de cada visita.
-        </h1>
-        <p className="max-w-xl text-lg text-muted-foreground">
-          Gestiona reservas de pet sitting a domicilio y recibe un diario
-          personalizado de cada visita, revisado y compartido contigo por tu
-          cuidadora.
-        </p>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button size="lg" render={<Link href="/register" />}>
-            Registrarme
-          </Button>
-          <Button size="lg" variant="secondary" render={<Link href="#servicios" />}>
-            Ver servicios
-          </Button>
+      <section className="mx-auto flex max-w-md flex-col gap-6 px-4 py-10 md:max-w-4xl md:flex-row md:items-center md:gap-10 md:py-16">
+        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl shadow-sm md:w-1/2">
+          <Image
+            src="/pet-sitter.jpeg"
+            alt="La cuidadora de Huellario abrazando con cariño a un perro pequeño en la playa"
+            fill
+            priority
+            sizes="(min-width: 768px) 512px, 100vw"
+            className="object-cover saturate-[1.08] contrast-[1.03] brightness-[1.02]"
+          />
+        </div>
+        <div className="flex flex-col gap-6 md:w-1/2">
+          <div className="flex flex-col gap-3 text-left">
+            <h1 className="text-3xl font-semibold tracking-tight text-balance">
+              Cuidado cercano para tu mascota, con un diario de cada visita.
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              Gestiona reservas de pet sitting a domicilio y recibe un diario
+              personalizado de cada visita, revisado y compartido contigo por
+              tu cuidadora.
+            </p>
+          </div>
+          <div className="flex flex-col gap-3">
+            <Button size="lg" render={<Link href="/register" />} className="w-full">
+              Registrarme
+            </Button>
+            <Button size="lg" variant="secondary" render={<Link href="#servicios" />} className="w-full">
+              Ver servicios
+            </Button>
+          </div>
         </div>
       </section>
 
