@@ -169,8 +169,9 @@ Ver [`.env.example`](.env.example). Resumen:
 - **SEO base implementado**: metadata (title template, description, Open
   Graph, Twitter Card, canonical), `robots.ts`/`sitemap.ts` (App Router),
   datos estructurados JSON-LD (`schema.org/Service`) en la landing, y
-  `noindex` en las áreas privadas `(client)` y `admin`. Recuerda configurar
-  `NEXT_PUBLIC_SITE_URL` con la URL real al desplegar.
+  `noindex` en las áreas privadas `(client)` y `admin`. `NEXT_PUBLIC_SITE_URL`
+  quedó configurado con la URL real (`https://www.huellario.com`) al
+  desplegar — verificado más adelante contra el `sitemap.xml` en producción.
 - **Fase 1 (Base de datos y autenticación) — completada**: esquema SQL y
   políticas RLS aplicados y verificados en Supabase (ver
   [`database/schema-notes.md`](database/schema-notes.md)). Registro
