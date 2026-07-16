@@ -3,6 +3,100 @@
 Plataforma web de gestión de servicios de pet sitting a domicilio, con
 generación automática de diarios de visita mediante IA. TFM individual.
 
+## Descripción general
+
+Huellario conecta a una cuidadora de mascotas (administradora) con sus
+clientes: los clientes registran sus mascotas y solicitan reservas de
+servicios a domicilio (visitas, paseos, cuidado prolongado o con
+medicación); la administradora gestiona esas reservas y, tras cada visita,
+registra cómo ha ido. Su funcionalidad diferencial es el **diario
+automático con IA**: a partir de los datos de la mascota y de la visita,
+Google Gemini genera un borrador de informe personalizado que la
+administradora siempre revisa, edita si hace falta y publica manualmente
+antes de que el cliente pueda verlo — el informe nunca se autopublica.
+
+El resto de la plataforma cubre el ciclo completo alrededor de ese diario:
+autenticación con roles (cliente/administradora), fichas de mascota con
+información relevante para su cuidado, fotos (de la mascota y de cada
+visita), reseñas verificadas con posibilidad de mostrar la foto de la
+mascota (con consentimiento explícito), notificaciones por email en el
+flujo de reservas, y recuperación/cierre de cuenta.
+
+## Despliegue y recursos del TFM
+
+| Recurso | Enlace |
+|---|---|
+| Proyecto en producción | **https://www.huellario.com** |
+| Repositorio | https://github.com/bertarosalia/huellario |
+| Slides de la presentación | _pendiente_ |
+| Vídeo explicativo | _pendiente_ |
+| Usuario/contraseña de prueba | facilitados en el formulario de entrega del TFM, no publicados aquí |
+
+## Funcionalidades principales
+
+- **Autenticación con roles** (Supabase Auth): registro con confirmación
+  por email, login, recuperación de contraseña, cierre de cuenta
+  (borrado permanente de datos y fotos), protección de rutas por sesión
+  y por rol (`client` / `admin`).
+- **Gestión de mascotas**: alta con información relevante para su cuidado
+  (alimentación, medicación, comportamiento, miedos, necesidades
+  especiales) y foto principal.
+- **Reservas**: el cliente solicita servicio/fecha/hora; la administradora
+  acepta, rechaza, marca como completada o cancela, con notificación por
+  email al cliente en cada cambio de estado.
+- **Registro de visitas**: checklist de cuidados, notas, incidencias y
+  fotos, a cargo de la administradora.
+- **Diario con IA**: generación de un borrador de informe con Google
+  Gemini a partir únicamente de los datos de la mascota y la visita
+  (nunca datos de contacto del cliente), revisión/edición y publicación
+  manual por la administradora; el cliente solo ve el informe una vez
+  publicado.
+- **Reseñas verificadas**: el cliente puntúa y comenta tras una reserva
+  completada, moderadas por la administradora antes de aparecer en la
+  landing pública; opción de mostrar la foto de la mascota en la reseña
+  pública, siempre con consentimiento explícito del dueño.
+- **Panel de administración**: gestión de reservas, visitas, informes y
+  reseñas desde un área separada y protegida por rol.
+
+## Estructura del proyecto
+
+```
+src/
+  app/
+    (public)/      → landing, privacidad, términos, contacto (sin auth)
+    (auth)/        → login, registro, recuperar/restablecer contraseña
+    (client)/      → área privada del cliente (mascotas, reservas, informes)
+    admin/         → panel de la administradora (reservas, visitas, reseñas)
+
+  components/
+    ui/            → componentes base (shadcn/ui)
+    layout/        → headers, footer
+    auth/          → componentes de autenticación (p. ej. cierre de cuenta)
+    pets/ bookings/ visits/ reports/ reviews/ admin/
+                   → componentes específicos por dominio
+
+  features/
+    <dominio>/       (auth, pets, bookings, visits, reports, reviews)
+      actions.ts    → mutaciones (Server Actions)
+      queries.ts    → lecturas
+      schemas.ts    → validación con Zod
+      types.ts      → tipos TypeScript del dominio
+
+  lib/
+    supabase/      → clientes de Supabase (server, browser, admin, storage)
+    ai/            → cliente e integración con Google Gemini
+    email/         → plantillas y envío de emails transaccionales (Resend)
+    constants.ts, utils.ts
+
+database/
+  migrations/      → SQL versionado (esquema, RLS, funciones)
+  seed.sql         → datos iniciales
+  schema-notes.md  → notas y decisiones sobre el esquema
+
+docs/              → documentación técnica (producto, arquitectura, modelo de datos, IA)
+tests/             → tests unitarios (Vitest)
+```
+
 ## Stack técnico
 
 Next.js (App Router) · TypeScript · React · Tailwind CSS · shadcn/ui ·
