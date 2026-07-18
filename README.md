@@ -28,7 +28,7 @@ flujo de reservas, y recuperación/cierre de cuenta.
 |---|---|
 | Proyecto en producción | **https://www.huellario.com** |
 | Repositorio | https://github.com/bertarosalia/huellario |
-| Slides de la presentación | _pendiente_ |
+| Slides de la presentación | https://canva.link/v2ronei8vacnqtg |
 | Vídeo explicativo | _pendiente_ |
 | Usuario/contraseña de prueba | facilitados en el formulario de entrega del TFM, no publicados aquí |
 
